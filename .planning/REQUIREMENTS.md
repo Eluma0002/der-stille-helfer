@@ -152,20 +152,75 @@ Deferred to later releases:
 
 ## Traceability
 
-*Wird während Roadmap-Erstellung befüllt*
+### v2 Requirements Mapping
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SCAN-01 | TBD | Pending |
-| SCAN-02 | TBD | Pending |
-| ... | ... | ... |
+| SCAN-01 | Phase 1 | Pending |
+| SCAN-02 | Phase 1 | Pending |
+| SCAN-03 | Phase 1 | Pending |
+| SCAN-04 | Phase 1 | Pending |
+| SCAN-05 | Phase 1 | Pending |
+| SCAN-06 | Phase 1 | Pending |
+| SCAN-07 | Phase 1 | Pending |
+| OCR-01 | Phase 2 | Pending |
+| OCR-02 | Phase 2 | Pending |
+| OCR-03 | Phase 2 | Pending |
+| OCR-04 | Phase 2 | Pending |
+| OCR-05 | Phase 2 | Pending |
+| PROD-01 | Phase 3 | Pending |
+| PROD-02 | Phase 3 | Pending |
+| PROD-03 | Phase 3 | Pending |
+| PROD-04 | Phase 3 | Pending |
+| AI-01 | Phase 4 | Pending |
+| AI-02 | Phase 4 | Pending |
+| AI-03 | Phase 4 | Pending |
+| AI-04 | Phase 4 | Pending |
+| AI-05 | Phase 4 | Pending |
+| AI-06 | Phase 4 | Pending |
+| AI-07 | Phase 4 | Pending |
+| AI-08 | Phase 4 | Pending |
+| AI-09 | Phase 4 | Pending |
+| NOT-01 | Phase 5 | Pending |
+| NOT-02 | Phase 5 | Pending |
+| NOT-03 | Phase 5 | Pending |
+| NOT-04 | Phase 5 | Pending |
+| NOT-05 | Phase 5 | Pending |
+| SHARE-11 | Phase 6 | Pending |
+| SHARE-12 | Phase 6 | Pending |
+| SHARE-01 | Phase 7 | Pending |
+| SHARE-02 | Phase 7 | Pending |
+| SHARE-03 | Phase 7 | Pending |
+| SHARE-04 | Phase 7 | Pending |
+| SHARE-05 | Phase 7 | Pending |
+| SHARE-06 | Phase 7 | Pending |
+| SHARE-07 | Phase 7 | Pending |
+| SHARE-08 | Phase 7 | Pending |
+| SHARE-09 | Phase 0 | Pending |
+| SHARE-10 | Phase 7 | Pending |
+| STAT-01 | Phase 8 | Pending |
+| STAT-02 | Phase 8 | Pending |
+| STAT-03 | Phase 8 | Pending |
+| STAT-04 | Phase 8 | Pending |
+| STAT-05 | Phase 8 | Pending |
 
 **Coverage:**
-- v1 requirements: 23 total (alle validiert)
-- v2 requirements: 45 total
-- Mapped to phases: 0 (noch nicht gemapped)
-- Unmapped: 45 ⚠️
+- v1 requirements: 23 total (all validated and implemented)
+- v2 requirements: 47 total
+- Mapped to phases: 47/47 ✓
+- Unmapped: 0 ✓
+
+**Phase Distribution:**
+- Phase 0 (Legal Foundation): 1 requirement
+- Phase 1 (Barcode Scanning): 7 requirements
+- Phase 2 (Receipt OCR): 5 requirements
+- Phase 3 (Extended Product Data): 4 requirements
+- Phase 4 (AI Cooking Assistant): 9 requirements
+- Phase 5 (Smart Notifications): 5 requirements
+- Phase 6 (Sharing Backend): 2 requirements
+- Phase 7 (Food Sharing Network): 9 requirements
+- Phase 8 (Analytics & Insights): 5 requirements
 
 ---
 *Requirements defined: 2026-02-07*
-*Last updated: 2026-02-07 after initial definition*
+*Last updated: 2026-02-07 after roadmap creation (v2.0 traceability complete)*
