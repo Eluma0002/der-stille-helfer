@@ -2,59 +2,8 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/schema';
 import { useUser } from '../context/UserContext';
+import ProductIcon from '../components/ProductIcon';
 import './Uebersicht.css';
-
-// Emoji mapping for products
-const PRODUCT_EMOJIS = {
-    // Dairy
-    'milch': '🥛',
-    'käse': '🧀',
-    'butter': '🧈',
-    'joghurt': '🥛',
-    // Fruits
-    'apfel': '🍎',
-    'banane': '🍌',
-    'orange': '🍊',
-    'traube': '🍇',
-    'erdbeere': '🍓',
-    'zitrone': '🍋',
-    // Vegetables
-    'tomate': '🍅',
-    'karotte': '🥕',
-    'paprika': '🫑',
-    'zwiebel': '🧅',
-    'kartoffel': '🥔',
-    'salat': '🥬',
-    // Meat & Protein
-    'fleisch': '🥩',
-    'hähnchen': '🍗',
-    'fisch': '🐟',
-    'ei': '🥚',
-    'eier': '🥚',
-    'wurst': '🌭',
-    // Bread & Grains
-    'brot': '🍞',
-    'reis': '🍚',
-    'nudel': '🍝',
-    // Other
-    'wasser': '💧',
-    'saft': '🧃',
-    'bier': '🍺',
-    'wein': '🍷'
-};
-
-const getProductEmoji = (name) => {
-    if (!name) return '🍽️';
-    const lowerName = name.toLowerCase();
-
-    for (const [key, emoji] of Object.entries(PRODUCT_EMOJIS)) {
-        if (lowerName.includes(key)) {
-            return emoji;
-        }
-    }
-
-    return '🍽️'; // Default
-};
 
 const Uebersicht = () => {
     const { activeUser, activeUserId } = useUser();
@@ -116,7 +65,7 @@ const Uebersicht = () => {
                     <div className="fridge-shelf shelf-top">
                         {groupedProducts.kuehlschrank.slice(0, 4).map(p => (
                             <div key={p.id} className="fridge-item">
-                                <span className="item-emoji">{getProductEmoji(p.name)}</span>
+                                <ProductIcon productName={p.name} size="large" />
                             </div>
                         ))}
                     </div>
@@ -124,7 +73,7 @@ const Uebersicht = () => {
                     <div className="fridge-shelf shelf-middle">
                         {groupedProducts.kuehlschrank.slice(4, 8).map(p => (
                             <div key={p.id} className="fridge-item">
-                                <span className="item-emoji">{getProductEmoji(p.name)}</span>
+                                <ProductIcon productName={p.name} size="large" />
                             </div>
                         ))}
                     </div>
@@ -132,7 +81,7 @@ const Uebersicht = () => {
                     <div className="fridge-shelf shelf-bottom">
                         {groupedProducts.kuehlschrank.slice(8, 12).map(p => (
                             <div key={p.id} className="fridge-item">
-                                <span className="item-emoji">{getProductEmoji(p.name)}</span>
+                                <ProductIcon productName={p.name} size="large" />
                             </div>
                         ))}
                     </div>
@@ -155,7 +104,9 @@ const Uebersicht = () => {
             <div className="product-grid">
                 {groupedProducts.kuehlschrank.slice(0, 8).map(p => (
                     <div key={p.id} className="product-card" onClick={() => window.location.hash = '#/produkte'}>
-                        <div className="product-icon">{getProductEmoji(p.name)}</div>
+                        <div className="product-icon">
+                            <ProductIcon productName={p.name} size="large" />
+                        </div>
                         <div className="product-name">{p.name}</div>
                         <div className="product-info">
                             {new Date(p.ablauf).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })}
@@ -171,7 +122,7 @@ const Uebersicht = () => {
                     <div className="expiring-list">
                         {expiringProducts.map(p => (
                             <div key={p.id} className="expiring-item">
-                                <span className="item-emoji">{getProductEmoji(p.name)}</span>
+                                <ProductIcon productName={p.name} size="medium" />
                                 <span className="item-name">{p.name}</span>
                                 <span className="item-date">
                                     {new Date(p.ablauf).toLocaleDateString('de-DE')}

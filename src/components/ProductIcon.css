@@ -1,0 +1,68 @@
+/* ProductIcon Component Styles */
+
+.product-icon-container {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.product-icon-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: opacity 0.2s ease;
+}
+
+.product-icon-image.loading {
+    opacity: 0;
+}
+
+.product-icon-image.loaded {
+    opacity: 1;
+}
+
+.product-icon-emoji {
+    display: inline-block;
+    text-align: center;
+    line-height: 1;
+}
+
+/* Size variants */
+.icon-small {
+    width: 32px;
+    height: 32px;
+}
+
+.icon-small .product-icon-emoji {
+    font-size: 1.5rem;
+}
+
+.icon-medium {
+    width: 48px;
+    height: 48px;
+}
+
+.icon-medium .product-icon-emoji {
+    font-size: 2rem;
+}
+
+.icon-large {
+    width: 64px;
+    height: 64px;
+}
+
+.icon-large .product-icon-emoji {
+    font-size: 2.5rem;
+}
+
+/* Hover effect */
+.product-icon-container:hover {
+    transform: scale(1.05);
+    transition: transform 0.2s ease;
+}
+
+/* Clickable variant */
+.product-icon-container[onclick]:not([onclick=""]) {
+    cursor: pointer;
+}
