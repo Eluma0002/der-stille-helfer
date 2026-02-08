@@ -23,6 +23,7 @@ export default function Layout({ children }) {
                 <Link to="/uebersicht">🏠</Link>
                 <Link to="/produkte">🧊</Link>
                 <Link to="/rezepte">👨‍🍳</Link>
+                <Link to="/koch-assistent">🤖</Link>
                 <Link to="/einkauf">🛒</Link>
                 <Link to="/notizen">📝</Link>
                 <Link to="/einstellungen">⚙️</Link>

@@ -193,6 +193,13 @@ const Uebersicht = () => {
                 </button>
                 <button
                     className="action-btn"
+                    onClick={() => window.location.hash = '#/koch-assistent'}
+                >
+                    <span className="action-icon">🤖</span>
+                    <span className="action-label">Koch-AI</span>
+                </button>
+                <button
+                    className="action-btn"
                     onClick={() => window.location.hash = '#/rezepte'}
                 >
                     <span className="action-icon">👨‍🍳</span>

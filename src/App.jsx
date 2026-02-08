@@ -6,6 +6,7 @@ import PWAUpdatePrompt from './components/PWAUpdatePrompt';
 import Uebersicht from './pages/Uebersicht';
 import ProdukteListe from './pages/ProdukteListe';
 import RezepteListe from './pages/RezepteListe';
+import KochAssistent from './pages/KochAssistent';
 import EinkaufsListe from './pages/EinkaufsListe';
 import FavoritenListe from './pages/FavoritenListe';
 import NotizenListe from './pages/NotizenListe';
@@ -48,6 +49,7 @@ function App() {
                         <Route path="/uebersicht" element={<Uebersicht />} />
                         <Route path="/produkte" element={<ProdukteListe />} />
                         <Route path="/rezepte" element={<RezepteListe />} />
+                        <Route path="/koch-assistent" element={<KochAssistent />} />
                         <Route path="/einkauf" element={<EinkaufsListe />} />
                         <Route path="/favoriten" element={<FavoritenListe />} />
                         <Route path="/notizen" element={<NotizenListe />} />
