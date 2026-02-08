@@ -1,1 +1,149 @@
-.notes-view { margin-top: 10px; }
+/* Recipe Form Page */
+.recipe-form-page {
+    padding: 20px;
+}
+
+.recipe-form-page h2 {
+    margin-bottom: 20px;
+}
+
+/* Recipe Form Card */
+.recipe-form {
+    margin-top: 20px;
+}
+
+.recipe-form h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: var(--accent-color);
+}
+
+/* Meal Category Buttons */
+.meal-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.meal-buttons .btn {
+    flex: 1;
+    min-width: 100px;
+}
+
+/* Ingredients List */
+.ingredients-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ingredient-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.ingredient-row input {
+    flex: 1;
+}
+
+.ingredient-row .btn-delete {
+    background: var(--danger-light);
+    border: 2px solid var(--danger-color);
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+}
+
+.ingredient-row .btn-delete:hover {
+    background: var(--danger-color);
+    transform: scale(1.05);
+}
+
+/* Meta Row (Category, Portions, Time) */
+.meta-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 12px;
+}
+
+@media (max-width: 500px) {
+    .meta-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Recipe List */
+.recipe-list {
+    margin-top: 24px;
+}
+
+.recipe-card {
+    margin-bottom: 16px;
+}
+
+.recipe-card .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.recipe-card .card-header h3 {
+    margin: 0;
+    flex: 1;
+    font-size: 1.25rem;
+}
+
+.recipe-card .card-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.recipe-meta {
+    display: flex;
+    gap: 16px;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.recipe-preview p {
+    margin: 0 0 8px 0;
+    font-weight: 600;
+}
+
+.recipe-preview ul {
+    margin: 0;
+    padding-left: 20px;
+    list-style: disc;
+}
+
+.recipe-preview li {
+    margin-bottom: 4px;
+    color: var(--text-secondary);
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+}
+
+.empty-state p:first-child {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+}
+
+/* Form Group Label */
+.form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+}
