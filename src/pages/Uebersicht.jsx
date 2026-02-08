@@ -188,8 +188,8 @@ const Uebersicht = () => {
                     className="action-btn"
                     onClick={() => window.location.hash = '#/produkte'}
                 >
-                    <span className="action-icon">📦</span>
-                    <span className="action-label">Inventar</span>
+                    <span className="action-icon">🧊</span>
+                    <parameter name="action-label">Inventar</span>
                 </button>
                 <button
                     className="action-btn"

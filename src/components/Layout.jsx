@@ -21,7 +21,7 @@ export default function Layout({ children }) {
             <main>{children}</main>
             <nav>
                 <Link to="/uebersicht">🏠</Link>
-                <Link to="/produkte">📦</Link>
+                <Link to="/produkte">🧊</Link>
                 <Link to="/rezepte">👨‍🍳</Link>
                 <Link to="/einkauf">🛒</Link>
                 <Link to="/notizen">📝</Link>
