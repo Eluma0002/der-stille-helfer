@@ -14,7 +14,8 @@ const ProdukteListe = () => {
         [activeUserId]
     );
     const [name, setName] = useState('');
-    const [kat, setKat] = useState('vorrat');
+    const [kat, setKat] = useState('kuehlschrank'); // Default: Kühlschrank
+    const [ablauf, setAblauf] = useState(''); // Manual date input
     const [sortBy, setSortBy] = useState('ablauf');
     const [filterOrt, setFilterOrt] = useState('all');
     const [isLoading, setIsLoading] = useState(false);
@@ -26,17 +27,58 @@ const ProdukteListe = () => {
         setIsLoading(true);
 
         try {
+            // Use manual date or default 7 days
+            const expiryDate = ablauf
+                ? new Date(ablauf).toISOString()
+                : new Date(Date.now() + 7 * 24 * 3600 * 1000).toISOString();
+
             await db.produkte.add({
                 id: Date.now().toString(),
                 person_id: activeUserId,
                 name,
                 kategorie: kat,
                 ort: kat,
-                ablauf: new Date(Date.now() + 7 * 24 * 3600 * 1000).toISOString()
+                ablauf: expiryDate
             });
             setName('');
+            setAblauf(''); // Reset date input
         } catch (err) {
             console.error('Error adding product:', err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Capitalize first letter automatically
+    const handleNameChange = (e) => {
+        const value = e.target.value;
+        if (value.length === 1) {
+            setName(value.toUpperCase());
+        } else {
+            setName(value);
+        }
+    };
+
+    // Delete product with option to add to shopping list
+    const handleDelete = async (product) => {
+        const addToList = window.confirm(
+            `"${product.name}" löschen?\n\nKlicke OK um auch zur Einkaufsliste hinzuzufügen, Abbrechen um nur zu löschen.`
+        );
+
+        setIsLoading(true);
+        try {
+            await db.produkte.delete(product.id);
+
+            if (addToList) {
+                await db.einkaufsliste.add({
+                    id: Date.now().toString(),
+                    person_id: activeUserId,
+                    name: product.name,
+                    checked: false
+                });
+            }
+        } catch (err) {
+            console.error('Error deleting product:', err);
         } finally {
             setIsLoading(false);
         }
@@ -106,7 +148,7 @@ const ProdukteListe = () => {
                         type="text"
                         placeholder="Produktname..."
                         value={name}
-                        onChange={(e) => setName(e.target.value)}
+                        onChange={handleNameChange}
                     />
                 </div>
                 <div className="form-group">
@@ -115,6 +157,18 @@ const ProdukteListe = () => {
                             <option key={c.id} value={c.id}>{c.icon} {c.name}</option>
                         ))}
                     </select>
+                </div>
+                <div className="form-group">
+                    <label htmlFor="ablauf-input" style={{ fontSize: '0.9rem', marginBottom: '5px', display: 'block' }}>
+                        Ablaufdatum (optional, Standard: +7 Tage)
+                    </label>
+                    <input
+                        id="ablauf-input"
+                        type="date"
+                        value={ablauf}
+                        onChange={(e) => setAblauf(e.target.value)}
+                        placeholder="Optional"
+                    />
                 </div>
                 <div className="button-group">
                     <button
@@ -174,16 +228,7 @@ const ProdukteListe = () => {
                                 <small>{getLocationName(p.ort)}</small>
                             </div>
                             <button
-                                onClick={async () => {
-                                    setIsLoading(true);
-                                    try {
-                                        await db.produkte.delete(p.id);
-                                    } catch (err) {
-                                        console.error('Error deleting product:', err);
-                                    } finally {
-                                        setIsLoading(false);
-                                    }
-                                }}
+                                onClick={() => handleDelete(p)}
                                 disabled={isLoading}
                                 className="btn-delete"
                             >
