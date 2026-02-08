@@ -14,7 +14,7 @@ export const DEFAULT_CATEGORIES = [
 ];
 
 /**
- * Sample recipes for initial database population
+ * Sample recipes with meal categories (mahlzeit)
  * Schema matches db.base_rezepte
  */
 export const SAMPLE_RECIPES = [
@@ -31,6 +31,7 @@ export const SAMPLE_RECIPES = [
         ],
         anleitung: 'Zwiebel und Knoblauch fein hacken und in Olivenol anbraten. Hackfleisch hinzufugen und krumelig braten. Tomatenpassata dazugeben, mit Salz und Pfeffer wurzen. 20 Minuten kocheln lassen. Spaghetti nach Packungsanleitung kochen und mit der Sauce servieren.',
         kategorie: 'Hauptgericht',
+        mahlzeit: 'mittag',
         portionen: 4,
         zeit: 35
     },
@@ -46,6 +47,7 @@ export const SAMPLE_RECIPES = [
         ],
         anleitung: 'Kartoffeln kochen, schalen und in Scheiben schneiden. Zwiebel fein hacken. Warme Bruhe mit Essig und Ol vermengen. Uber die Kartoffeln giessen, Zwiebeln unterheben. Mit Salz und Pfeffer abschmecken. Mindestens 30 Minuten ziehen lassen.',
         kategorie: 'Beilage',
+        mahlzeit: 'mittag',
         portionen: 4,
         zeit: 45
     },
@@ -61,6 +63,7 @@ export const SAMPLE_RECIPES = [
         ],
         anleitung: 'Alle Zutaten zu einem glatten Teig verruhren. Teig 15 Minuten ruhen lassen. In einer Pfanne mit etwas Butter dunne Pfannkuchen ausbacken. Nach Belieben mit Zucker, Marmelade oder Nutella servieren.',
         kategorie: 'Dessert',
+        mahlzeit: 'snack',
         portionen: 4,
         zeit: 25
     },
@@ -77,6 +80,7 @@ export const SAMPLE_RECIPES = [
         ],
         anleitung: 'Fleisch in Wurfel schneiden. Zwiebeln in Ringe schneiden und in Ol glasig braten. Fleisch anbraten. Paprikapulver und Tomatenmark einruhren. Mit Bruhe ablossen. Bei niedriger Hitze 1,5-2 Stunden schmoren bis das Fleisch zart ist.',
         kategorie: 'Hauptgericht',
+        mahlzeit: 'abend',
         portionen: 4,
         zeit: 120
     },
@@ -91,6 +95,7 @@ export const SAMPLE_RECIPES = [
         ],
         anleitung: 'Eier mit Salz und Pfeffer verquirlen. Butter in einer Pfanne erhitzen. Eier hineingeben und bei mittlerer Hitze stocken lassen. Das Omelett zusammenklappen und servieren. Nach Belieben mit Kase, Schinken oder Krauter fullen.',
         kategorie: 'Fruhstuck',
+        mahlzeit: 'fruehstueck',
         portionen: 1,
         zeit: 10
     },
@@ -106,6 +111,7 @@ export const SAMPLE_RECIPES = [
         ],
         anleitung: 'Speck in einer Pfanne knusprig braten. Eier mit Salz und Pfeffer verquirlen und in die Pfanne geben. Bei mittlerer Hitze unter Ruhren stocken lassen, bis die gewunschte Konsistenz erreicht ist. Mit frischem Brot servieren.',
         kategorie: 'Fruhstuck',
+        mahlzeit: 'fruehstueck',
         portionen: 2,
         zeit: 15
     },
@@ -122,6 +128,7 @@ export const SAMPLE_RECIPES = [
         ],
         anleitung: 'Gemuse waschen und in mundgerechte Stucke schneiden. Zwiebel fein hacken und in Olivenol anbraten. Gemuse hinzufugen und 5-7 Minuten braten. Mit Sojasauce abschmecken und servieren. Optional mit Reis oder Nudeln kombinieren.',
         kategorie: 'Hauptgericht',
+        mahlzeit: 'abend',
         portionen: 3,
         zeit: 25
     },
@@ -138,6 +145,7 @@ export const SAMPLE_RECIPES = [
         ],
         anleitung: 'Kartoffeln schalen, vierteln und mit Olivenol, Salz, Pfeffer und Rosmarin vermengen. Auf einem Backblech verteilen. Hähnchenbrust mit Salz und Pfeffer wurzen und auf die Kartoffeln legen. Bei 200°C fur 30-35 Minuten im Ofen backen, bis das Fleisch durchgegart ist.',
         kategorie: 'Hauptgericht',
+        mahlzeit: 'abend',
         portionen: 2,
         zeit: 45
     },
@@ -154,6 +162,7 @@ export const SAMPLE_RECIPES = [
         ],
         anleitung: 'Zwiebel, Karotten und Sellerie fein hacken und in Olivenol anbraten. Linsen hinzufugen und kurz mitbraten. Mit Gemusebruhe ablossen und 20-25 Minuten kochen lassen, bis die Linsen weich sind. Mit Salz und Pfeffer abschmecken. Optional mit Brot servieren.',
         kategorie: 'Suppe',
+        mahlzeit: 'mittag',
         portionen: 4,
         zeit: 35
     },
@@ -170,6 +179,7 @@ export const SAMPLE_RECIPES = [
         ],
         anleitung: 'Obst waschen und in mundgerechte Stucke schneiden. In einer Schussel vermengen. Mit Zitronensaft und Honig betraufeln, um das Braunwerden zu verhindern. Kuhl stellen und frisch servieren.',
         kategorie: 'Dessert',
+        mahlzeit: 'snack',
         portionen: 3,
         zeit: 10
     }
