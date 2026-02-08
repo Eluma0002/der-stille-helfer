@@ -1,0 +1,200 @@
+import React, { useState, useMemo } from 'react';
+import { useLiveQuery } from 'dexie-react-hooks';
+import { db } from '../db/schema';
+import { DEFAULT_CATEGORIES } from '../constants';
+import { useUser } from '../context/UserContext';
+import { strings } from '../strings/de';
+import BarcodeScanner from '../components/BarcodeScanner';
+import { searchProduct } from '../api/openfoodfacts';
+
+const ProdukteListe = () => {
+    const { activeUserId } = useUser();
+    const produkte = useLiveQuery(
+        () => db.produkte.where('person_id').equals(activeUserId).toArray(),
+        [activeUserId]
+    );
+    const [name, setName] = useState('');
+    const [kat, setKat] = useState('vorrat');
+    const [sortBy, setSortBy] = useState('ablauf');
+    const [filterOrt, setFilterOrt] = useState('all');
+    const [isLoading, setIsLoading] = useState(false);
+    const [showScanner, setShowScanner] = useState(false);
+    const [scanMessage, setScanMessage] = useState('');
+
+    const addProdukt = async () => {
+        if (!name) return;
+        setIsLoading(true);
+
+        try {
+            await db.produkte.add({
+                id: Date.now().toString(),
+                person_id: activeUserId,
+                name,
+                kategorie: kat,
+                ort: kat,
+                ablauf: new Date(Date.now() + 7 * 24 * 3600 * 1000).toISOString()
+            });
+            setName('');
+        } catch (err) {
+            console.error('Error adding product:', err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleScan = async (barcode) => {
+        setShowScanner(false);
+        setIsLoading(true);
+        setScanMessage('Suche Produkt...');
+
+        try {
+            const result = await searchProduct(barcode);
+
+            if (result.found) {
+                setScanMessage(`Gefunden: ${result.name}`);
+                setName(result.brand ? `${result.brand} ${result.name}` : result.name);
+                setKat(result.category);
+
+                // Auto-clear message after 3 seconds
+                setTimeout(() => setScanMessage(''), 3000);
+            } else {
+                setScanMessage(`Barcode ${barcode} nicht gefunden. Bitte manuell eingeben.`);
+                setName('');
+                setTimeout(() => setScanMessage(''), 5000);
+            }
+        } catch (err) {
+            console.error('Scan error:', err);
+            setScanMessage('Fehler beim Suchen. Bitte manuell eingeben.');
+            setTimeout(() => setScanMessage(''), 5000);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const filteredAndSortedProdukte = useMemo(() => {
+        if (!produkte) return [];
+
+        let filtered = [...produkte];
+        if (filterOrt !== 'all') {
+            filtered = filtered.filter(p => p.ort === filterOrt);
+        }
+
+        return [...filtered].sort((a, b) => {
+            if (sortBy === 'ablauf') {
+                return new Date(a.ablauf) - new Date(b.ablauf);
+            } else {
+                return a.name.localeCompare(b.name);
+            }
+        });
+    }, [produkte, sortBy, filterOrt]);
+
+    const getLocationName = (locationId) => {
+        const category = DEFAULT_CATEGORIES.find(c => c.id === locationId);
+        return category ? category.name : locationId;
+    };
+
+    return (
+        <div className="page">
+            <h2>{strings.products.title}</h2>
+
+            <div className="card">
+                {scanMessage && (
+                    <div className="scan-message">{scanMessage}</div>
+                )}
+                <div className="form-group">
+                    <input
+                        type="text"
+                        placeholder="Produktname..."
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                    />
+                </div>
+                <div className="form-group">
+                    <select value={kat} onChange={(e) => setKat(e.target.value)}>
+                        {DEFAULT_CATEGORIES.map(c => (
+                            <option key={c.id} value={c.id}>{c.icon} {c.name}</option>
+                        ))}
+                    </select>
+                </div>
+                <div className="button-group">
+                    <button
+                        onClick={() => setShowScanner(true)}
+                        className="btn secondary"
+                        disabled={isLoading}
+                    >
+                        📷 Barcode scannen
+                    </button>
+                    <button
+                        onClick={addProdukt}
+                        className="btn primary"
+                        disabled={isLoading}
+                    >
+                        {isLoading ? `${strings.common.loading}...` : strings.products.add}
+                    </button>
+                </div>
+            </div>
+
+            {showScanner && (
+                <BarcodeScanner
+                    onScan={handleScan}
+                    onClose={() => setShowScanner(false)}
+                />
+            )}
+
+            <div className="controls">
+                <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                >
+                    <option value="ablauf">{strings.products.sort.expiration}</option>
+                    <option value="name">{strings.products.sort.name}</option>
+                </select>
+
+                <select
+                    value={filterOrt}
+                    onChange={(e) => setFilterOrt(e.target.value)}
+                >
+                    <option value="all">{strings.products.filter.all}</option>
+                    {DEFAULT_CATEGORIES.map(c => (
+                        <option key={c.id} value={c.id}>{c.icon} {c.name}</option>
+                    ))}
+                </select>
+            </div>
+
+            <div className="list">
+                {isLoading && <p className="loading">{strings.common.loading}...</p>}
+                {filteredAndSortedProdukte.length === 0 ? (
+                    <p className="empty-state">{strings.products.noProducts}</p>
+                ) : (
+                    filteredAndSortedProdukte.map(p => (
+                        <div key={p.id} className="card product-item">
+                            <div className="product-info">
+                                <strong>{p.name}</strong>
+                                <small>Läuft ab: {new Date(p.ablauf).toLocaleDateString()}</small>
+                                <small>{getLocationName(p.ort)}</small>
+                            </div>
+                            <button
+                                onClick={async () => {
+                                    setIsLoading(true);
+                                    try {
+                                        await db.produkte.delete(p.id);
+                                    } catch (err) {
+                                        console.error('Error deleting product:', err);
+                                    } finally {
+                                        setIsLoading(false);
+                                    }
+                                }}
+                                disabled={isLoading}
+                                className="btn-delete"
+                            >
+                                🗑️
+                            </button>
+                        </div>
+                    ))
+                )}
+            </div>
+        </div>
+    );
+};
+
+export default ProdukteListe;

@@ -1,0 +1,29 @@
+.rezepte-page {
+    padding: 20px;
+}
+
+.recipe-card {
+    border-left: 5px solid var(--retro-moss);
+}
+
+.card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.card-link:hover .card {
+    background-color: var(--accent-light, #f0f0f0);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-link .card {
+    transition: all 0.2s ease;
+}
+
+.recipe-meta {
+    color: #666;
+    font-size: 14px;
+    margin-top: 8px;
+}

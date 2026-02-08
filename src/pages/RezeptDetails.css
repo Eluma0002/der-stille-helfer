@@ -1,0 +1,87 @@
+.rezept-details {
+  padding: 20px;
+}
+
+.safety-badge {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.badge-safe {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.badge-adapted {
+  background-color: #FF9800;
+  color: white;
+}
+
+.badge-warning {
+  background-color: #F44336;
+  color: white;
+}
+
+.substitutions {
+  background-color: #FFF3E0;
+  border-left: 4px solid #FF9800;
+  padding: 16px;
+  margin: 16px 0;
+  border-radius: 4px;
+}
+
+.substitutions h3 {
+  margin-top: 0;
+  color: #E65100;
+}
+
+.substitutions ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.substitutions li {
+  margin: 8px 0;
+  padding: 4px 0;
+}
+
+.warning-text {
+  color: #F44336;
+  font-style: italic;
+}
+
+/* Shopping list action */
+.shopping-list-action {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.shopping-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.list-message {
+    margin-top: 12px;
+    padding: 10px 16px;
+    background-color: #E8F5E9;
+    color: #2E7D32;
+    border-radius: 8px;
+    font-size: 14px;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

@@ -1,0 +1,29 @@
+.produkte-page {
+    padding: 20px;
+}
+
+.product-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.button-group .btn {
+    flex: 1;
+    min-width: 140px;
+}
+
+.scan-message {
+    padding: 10px;
+    background: #e3f2fd;
+    border-left: 4px solid #2196F3;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
