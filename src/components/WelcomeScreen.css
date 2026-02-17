@@ -1,78 +1,75 @@
 .welcome-screen {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #fdfdfb;
-  animation: fadeIn 0.4s ease-out;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(160deg, #FFF8F2 0%, #FDEBD0 50%, #FFF8F2 100%);
+    animation: fadeIn 0.5s ease-out;
 }
 
 .welcome-content {
-  text-align: center;
-  padding: 20px;
-  width: 100%;
-  max-width: 400px;
+    text-align: center;
+    padding: 20px;
+    width: 100%;
+    max-width: 400px;
 }
 
 .welcome-title {
-  font-size: 2.5rem;
-  color: #333;
-  margin-bottom: 8px;
+    font-size: 2.5rem;
+    color: var(--text, #2D2A26);
+    margin-bottom: 8px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
 }
 
 .welcome-subtitle {
-  font-size: 1.3rem;
-  color: #666;
-  margin-bottom: 40px;
+    font-size: 1.2rem;
+    color: var(--text-secondary, #6B6560);
+    margin-bottom: 40px;
 }
 
 .user-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 0 20px;
 }
 
 .user-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  min-height: 120px;
-  width: 100%;
-  border: none;
-  border-radius: 16px;
-  color: white;
-  cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    min-height: 100px;
+    width: 100%;
+    border: none;
+    border-radius: 20px;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    font-family: inherit;
 }
 
 .user-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
 .user-button:active {
-  transform: scale(0.98);
+    transform: scale(0.98);
 }
 
 .user-emoji {
-  font-size: 2.5rem;
+    font-size: 2.5rem;
 }
 
 .user-name {
-  font-size: 1.5rem;
-  font-weight: 600;
+    font-size: 1.4rem;
+    font-weight: 700;
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }

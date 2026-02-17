@@ -4,6 +4,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/schema';
 import { SAMPLE_RECIPES } from '../constants';
 import { migrateRecipes } from '../utils/migrate-recipes';
+import './RezepteListe.css';
 
 const MEAL_CATEGORIES = [
     { id: 'all', name: 'Alle', icon: '🍽️' },
@@ -18,14 +19,12 @@ const RezepteListe = () => {
     const [search, setSearch] = useState('');
     const [mealFilter, setMealFilter] = useState('all');
 
-    // Init sample recipes if empty & migrate existing recipes
     useEffect(() => {
         const init = async () => {
             const count = await db.base_rezepte.count();
             if (count === 0) {
                 await db.base_rezepte.bulkAdd(SAMPLE_RECIPES);
             } else {
-                // Migrate existing recipes to add mahlzeit field
                 await migrateRecipes();
             }
         };
@@ -39,52 +38,62 @@ const RezepteListe = () => {
     }) || [];
 
     return (
-        <div className="page">
-            <h2>👨‍🍳 Rezepte</h2>
+        <div className="page rezepte-page">
+            <h2>Rezepte</h2>
 
-            <div className="card">
+            <div className="rezepte-search">
                 <input
                     type="text"
-                    placeholder="Suche..."
+                    placeholder="Rezept suchen..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    style={{ padding: '10px', width: '100%', marginBottom: '15px' }}
+                    className="search-input"
                 />
-
-                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                    {MEAL_CATEGORIES.map(cat => (
-                        <button
-                            key={cat.id}
-                            onClick={() => setMealFilter(cat.id)}
-                            className={`btn small ${mealFilter === cat.id ? 'primary' : 'secondary'}`}
-                            style={{ flex: '1', minWidth: '80px' }}
-                        >
-                            {cat.icon} {cat.name}
-                        </button>
-                    ))}
-                </div>
             </div>
 
-            <div className="list">
+            <div className="meal-filter-row">
+                {MEAL_CATEGORIES.map(cat => (
+                    <button
+                        key={cat.id}
+                        onClick={() => setMealFilter(cat.id)}
+                        className={`meal-chip ${mealFilter === cat.id ? 'active' : ''}`}
+                    >
+                        <span className="meal-chip-icon">{cat.icon}</span>
+                        <span className="meal-chip-label">{cat.name}</span>
+                    </button>
+                ))}
+            </div>
+
+            <div className="rezepte-grid">
                 {filtered.map(r => {
                     const mealCat = MEAL_CATEGORIES.find(c => c.id === r.mahlzeit);
                     return (
-                        <Link key={r.id} to={`/rezept/${r.id}`} className="card-link">
-                            <div className="card">
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
-                                    <h3>{r.name}</h3>
-                                    {mealCat && <span style={{ fontSize: '1.5rem' }}>{mealCat.icon}</span>}
+                        <Link key={r.id} to={`/rezept/${r.id}`} className="rezept-card-link">
+                            <div className="rezept-card">
+                                <div className="rezept-card-icon">
+                                    {mealCat ? mealCat.icon : '🍽️'}
                                 </div>
-                                <p><strong>Zutaten:</strong> {r.zutaten.map(z => z.name).join(', ')}</p>
-                                <p className="recipe-meta">
-                                    {mealCat && <span>{mealCat.name}</span>}
-                                    {r.zeit && <span> · {r.zeit} Min.</span>}
+                                <h3 className="rezept-card-title">{r.name}</h3>
+                                <p className="rezept-card-ingredients">
+                                    {r.zutaten.slice(0, 3).map(z => z.name).join(', ')}
+                                    {r.zutaten.length > 3 && ` +${r.zutaten.length - 3}`}
                                 </p>
+                                <div className="rezept-card-footer">
+                                    {mealCat && <span className="rezept-tag">{mealCat.name}</span>}
+                                    {r.zeit && <span className="rezept-time">{r.zeit} Min.</span>}
+                                </div>
                             </div>
                         </Link>
                     );
                 })}
             </div>
+
+            {filtered.length === 0 && (
+                <div className="empty-state">
+                    <p>Keine Rezepte gefunden</p>
+                    <p>Probiere einen anderen Suchbegriff.</p>
+                </div>
+            )}
         </div>
     );
 };

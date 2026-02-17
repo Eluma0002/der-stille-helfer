@@ -1,91 +1,96 @@
 .user-display {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 8px 12px;
-  border-radius: 8px;
-  transition: background-color 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    cursor: pointer;
+    padding: 6px 14px;
+    border-radius: 24px;
+    transition: all 0.2s ease;
+    font-family: inherit;
 }
 
 .user-display:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+    background: rgba(255, 255, 255, 0.25);
 }
 
 .user-display:active {
-  background-color: rgba(0, 0, 0, 0.1);
+    transform: scale(0.97);
 }
 
 .user-display-emoji {
-  font-size: 1.5rem;
+    font-size: 1.3rem;
 }
 
 .user-display-name {
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: #333;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: white;
 }
 
-/* Dialog styles */
+/* Dialog */
 .user-switch-dialog {
-  border: none;
-  border-radius: 16px;
-  padding: 0;
-  max-width: 300px;
-  width: calc(100% - 40px);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    border: none;
+    border-radius: 20px;
+    padding: 0;
+    max-width: 320px;
+    width: calc(100% - 40px);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
 }
 
 .user-switch-dialog::backdrop {
-  background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
 }
 
 .dialog-content {
-  padding: 24px;
-  text-align: center;
+    padding: 28px 24px;
+    text-align: center;
 }
 
 .dialog-question {
-  font-size: 1.1rem;
-  color: #333;
-  margin: 0 0 24px 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text, #2D2A26);
+    margin: 0 0 24px 0;
 }
 
 .dialog-buttons {
-  display: flex;
-  gap: 12px;
+    display: flex;
+    gap: 12px;
 }
 
 .dialog-btn {
-  flex: 1;
-  padding: 12px 16px;
-  border: none;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: transform 0.1s ease, opacity 0.1s ease;
+    flex: 1;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.1s ease, opacity 0.1s ease;
+    font-family: inherit;
 }
 
 .dialog-btn:active {
-  transform: scale(0.98);
+    transform: scale(0.97);
 }
 
 .dialog-btn-cancel {
-  background-color: #e5e5e5;
-  color: #333;
+    background-color: #F0ECE4;
+    color: var(--text, #2D2A26);
 }
 
 .dialog-btn-cancel:hover {
-  background-color: #d5d5d5;
+    background-color: #E0D8CC;
 }
 
 .dialog-btn-confirm {
-  color: white;
+    color: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .dialog-btn-confirm:hover {
-  opacity: 0.9;
+    opacity: 0.9;
 }

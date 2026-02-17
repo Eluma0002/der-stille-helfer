@@ -1,0 +1,347 @@
+/* Teilen statt Wegwerfen */
+.teilen-page {
+    animation: fadeIn 0.3s ease-out;
+}
+
+.teilen-header {
+    margin-bottom: 20px;
+}
+
+.teilen-header h2 {
+    margin: 0 0 4px 0;
+    font-size: 1.5rem;
+}
+
+.teilen-subtitle {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+/* Anbieten Button */
+.teilen-anbieten-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--secondary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: background 0.2s;
+}
+
+.teilen-anbieten-btn:hover {
+    background: #219a52;
+}
+
+/* Share Form */
+.teilen-form {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    margin-bottom: 24px;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.teilen-form-field {
+    margin-bottom: 14px;
+}
+
+.teilen-form-field label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+}
+
+.teilen-form-field input,
+.teilen-form-field select,
+.teilen-form-field textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    font-family: inherit;
+    background: var(--bg-main);
+    transition: border-color 0.2s;
+}
+
+.teilen-form-field input:focus,
+.teilen-form-field select:focus,
+.teilen-form-field textarea:focus {
+    outline: none;
+    border-color: var(--secondary);
+    box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.15);
+}
+
+.teilen-form-field textarea {
+    resize: vertical;
+    min-height: 60px;
+}
+
+.teilen-form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.teilen-btn-cancel {
+    flex: 1;
+    padding: 10px;
+    background: var(--bg-warm);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.teilen-btn-submit {
+    flex: 1;
+    padding: 10px;
+    background: var(--secondary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.teilen-btn-submit:hover {
+    background: #219a52;
+}
+
+/* Empty state */
+.teilen-empty {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.teilen-empty-icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 12px;
+}
+
+.teilen-empty h3 {
+    color: var(--text);
+    margin: 0 0 8px 0;
+}
+
+.teilen-empty p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Offer list */
+.teilen-list {
+    margin-bottom: 24px;
+}
+
+.teilen-list-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0 0 12px 0;
+}
+
+.teilen-list--completed {
+    opacity: 0.6;
+}
+
+/* Offer cards */
+.teilen-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s;
+}
+
+.teilen-card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.teilen-card--verfuegbar {
+    border-left: 4px solid var(--secondary);
+}
+
+.teilen-card--reserviert {
+    border-left: 4px solid var(--warning);
+}
+
+.teilen-card--abgeholt {
+    border-left: 4px solid var(--text-muted);
+}
+
+.teilen-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.teilen-card-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+/* Status badges */
+.teilen-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 12px;
+    white-space: nowrap;
+}
+
+.teilen-badge--verfuegbar {
+    background: var(--success-light);
+    color: var(--secondary);
+}
+
+.teilen-badge--reserviert {
+    background: var(--warning-light);
+    color: var(--warning);
+}
+
+.teilen-badge--abgeholt {
+    background: var(--bg-warm);
+    color: var(--text-muted);
+}
+
+.teilen-card-details {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 8px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.teilen-card-art {
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    padding: 2px 8px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.75rem;
+}
+
+.teilen-card-menge {
+    font-weight: 600;
+}
+
+.teilen-card-expiry {
+    font-size: 0.8rem;
+    padding: 6px 10px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.teilen-card-expiry.expiring-ok {
+    background: var(--success-light);
+    color: var(--secondary);
+}
+
+.teilen-card-expiry.expiring-warning {
+    background: var(--warning-light);
+    color: var(--warning);
+}
+
+.teilen-card-expiry.expiring-soon {
+    background: #FEE2E2;
+    color: var(--danger);
+}
+
+.teilen-card-expiry.expired {
+    background: var(--danger-light);
+    color: var(--danger);
+    font-weight: 700;
+}
+
+.teilen-expiry-text {
+    font-weight: 700;
+    font-size: 0.75rem;
+}
+
+.teilen-card-ort,
+.teilen-card-behaelter,
+.teilen-card-notizen {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    padding: 4px 0;
+}
+
+.teilen-card-notizen {
+    font-style: italic;
+    background: var(--bg-warm);
+    padding: 8px 10px;
+    border-radius: var(--radius-sm);
+}
+
+/* Card actions */
+.teilen-card-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+}
+
+.teilen-btn-action {
+    flex: 1;
+    padding: 8px 12px;
+    background: var(--secondary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.teilen-btn-action:hover {
+    background: #219a52;
+}
+
+.teilen-btn-withdraw {
+    padding: 8px 12px;
+    background: none;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.teilen-btn-withdraw:hover {
+    background: var(--danger-light);
+    color: var(--danger);
+    border-color: var(--danger);
+}

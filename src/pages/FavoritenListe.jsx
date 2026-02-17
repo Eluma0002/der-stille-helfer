@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/schema';
 import { useUser } from '../context/UserContext';
@@ -11,20 +12,26 @@ const FavoritenListe = () => {
     );
 
     return (
-        <div className="favoriten-page">
-            <h2>Deine Favoriten ❤️</h2>
-            <div className="favoriten-grid">
-                {favorites?.length > 0 ? (
-                    favorites.map(fav => (
+        <div className="page" style={{ animation: 'fadeIn 0.3s ease-out' }}>
+            <h2>Deine Favoriten</h2>
+            {favorites?.length > 0 ? (
+                <div className="list">
+                    {favorites.map(fav => (
                         <div key={fav.id} className="card">
-                            <h3>Favorit ID: {fav.rezept_id}</h3>
-                            <p>Typ: {fav.rezept_type}</p>
+                            <h3>{fav.rezept_id}</h3>
+                            <p style={{ color: 'var(--text-secondary)' }}>Typ: {fav.rezept_type}</p>
                         </div>
-                    ))
-                ) : (
-                    <p>Noch keine Favoriten gespeichert.</p>
-                )}
-            </div>
+                    ))}
+                </div>
+            ) : (
+                <div className="empty-state">
+                    <p>Noch keine Favoriten</p>
+                    <p>Markiere Rezepte als Favoriten, um sie hier zu finden.</p>
+                    <Link to="/rezepte" className="btn" style={{ display: 'inline-flex', marginTop: '16px' }}>
+                        Rezepte entdecken
+                    </Link>
+                </div>
+            )}
         </div>
     );
 };

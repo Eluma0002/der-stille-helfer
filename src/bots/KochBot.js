@@ -1,5 +1,5 @@
 import { Bot } from './Bot.js';
-import { ELVIS_SUBSTITUTIONS } from './substitutions.js';
+import { ELVIS_SUBSTITUTIONS, ELVIS_ALLOWED, ELVIS_EXCLUDED_ALTERNATIVES } from './substitutions.js';
 import { strings } from '../strings/de.js';
 
 export class KochBot extends Bot {
@@ -24,15 +24,29 @@ export class KochBot extends Bot {
 
     /**
      * Build a map of normalized restriction keys to original + alternatives
+     * Filters out excluded alternatives (e.g. Soja)
      * @private
      */
     _buildNormalizedMap() {
         const map = new Map();
+        const excludedNormalized = ELVIS_EXCLUDED_ALTERNATIVES.map(a => this._normalize(a));
         for (const [original, alternatives] of Object.entries(ELVIS_SUBSTITUTIONS)) {
             const normalized = this._normalize(original);
-            map.set(normalized, { original, alternatives });
+            const filteredAlts = alternatives.filter(alt =>
+                !excludedNormalized.some(ex => this._normalize(alt).includes(ex))
+            );
+            map.set(normalized, { original, alternatives: filteredAlts });
         }
         return map;
+    }
+
+    /**
+     * Check if an ingredient is on the allowed list (e.g. Butter, Hartkäse)
+     * @private
+     */
+    _isAllowed(ingredientName) {
+        const normalized = this._normalize(ingredientName);
+        return ELVIS_ALLOWED.some(allowed => normalized.includes(this._normalize(allowed)));
     }
 
     /**
@@ -48,6 +62,9 @@ export class KochBot extends Bot {
 
         for (const zutat of recipe.zutaten) {
             if (!zutat.name) continue;
+
+            // Skip ingredients that are explicitly allowed
+            if (this._isAllowed(zutat.name)) continue;
 
             const normalizedName = this._normalize(zutat.name);
 

@@ -13,6 +13,7 @@ import NotizenListe from './pages/NotizenListe';
 import Einstellungen from './pages/Einstellungen';
 import BackupExport from './pages/BackupExport';
 import RezeptDetails from './pages/RezeptDetails';
+import TeilenSeite from './pages/TeilenSeite';
 
 function App() {
     const {
@@ -55,6 +56,7 @@ function App() {
                         <Route path="/notizen" element={<NotizenListe />} />
                         <Route path="/einstellungen" element={<Einstellungen />} />
                         <Route path="/backup" element={<BackupExport />} />
+                        <Route path="/teilen" element={<TeilenSeite />} />
                         <Route path="/rezept/:id" element={<RezeptDetails />} />
                         <Route path="/" element={<Navigate to="/uebersicht" replace />} />
                     </Routes>

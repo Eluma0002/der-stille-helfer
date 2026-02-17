@@ -1,13 +1,23 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import WelcomeScreen from './WelcomeScreen';
 import UserSwitcher from './UserSwitcher';
 
+const NAV_ITEMS = [
+    { path: '/uebersicht', icon: '🏠', label: 'Home' },
+    { path: '/produkte', icon: '🧊', label: 'Inventar' },
+    { path: '/rezepte', icon: '📖', label: 'Rezepte' },
+    { path: '/koch-assistent', icon: '🍳', label: 'Koch-AI' },
+    { path: '/einkauf', icon: '🛒', label: 'Einkauf' },
+    { path: '/teilen', icon: '🤝', label: 'Teilen' },
+    { path: '/einstellungen', icon: '⚙️', label: 'Mehr' },
+];
+
 export default function Layout({ children }) {
     const { isFirstRun } = useUser();
+    const location = useLocation();
 
-    // Show welcome screen for first-time users
     if (isFirstRun) {
         return <WelcomeScreen />;
     }
@@ -20,13 +30,16 @@ export default function Layout({ children }) {
             </header>
             <main>{children}</main>
             <nav>
-                <Link to="/uebersicht">🏠</Link>
-                <Link to="/produkte">🧊</Link>
-                <Link to="/rezepte">👨‍🍳</Link>
-                <Link to="/koch-assistent">🤖</Link>
-                <Link to="/einkauf">🛒</Link>
-                <Link to="/notizen">📝</Link>
-                <Link to="/einstellungen">⚙️</Link>
+                {NAV_ITEMS.map(item => (
+                    <Link
+                        key={item.path}
+                        to={item.path}
+                        className={location.pathname === item.path ? 'active' : ''}
+                    >
+                        <span>{item.icon}</span>
+                        <span className="nav-label">{item.label}</span>
+                    </Link>
+                ))}
             </nav>
         </div>
     );
