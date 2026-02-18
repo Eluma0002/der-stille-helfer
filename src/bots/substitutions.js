@@ -42,3 +42,11 @@ export const ELVIS_EXCLUDED_ALTERNATIVES = [
 
 // Export list of restricted ingredients for profile seeding
 export const ELVIS_RESTRICTIONS = Object.keys(ELVIS_SUBSTITUTIONS);
+
+// Vollständiges Allergieprofil als strukturiertes Objekt
+export const ELVIS_PROFILE = {
+    forbidden: Object.keys(ELVIS_SUBSTITUTIONS),
+    allowed: ELVIS_ALLOWED,
+    excluded: ELVIS_EXCLUDED_ALTERNATIVES,
+    substitutions: ELVIS_SUBSTITUTIONS
+};

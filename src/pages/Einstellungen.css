@@ -86,3 +86,195 @@
     padding-top: 24px;
     border-top: 1px solid var(--border);
 }
+
+/* ── Allergieprofil ────────────────────────────── */
+.allergy-card {
+    padding: 0;
+    overflow: hidden;
+}
+
+.allergy-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-align: left;
+}
+
+.allergy-header:hover {
+    background: var(--bg-warm);
+}
+
+.allergy-header-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.allergy-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--danger-light);
+    color: var(--danger);
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.allergy-chevron {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    transition: transform 0.2s ease;
+    display: inline-block;
+}
+
+.allergy-chevron.open {
+    transform: rotate(180deg);
+}
+
+.allergy-body {
+    padding: 0 20px 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.allergy-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.allergy-section-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin: 0;
+    padding-top: 4px;
+}
+
+.forbidden-title { color: #b91c1c; }
+.allowed-title   { color: #15803d; }
+.sub-title       { color: var(--text-secondary); }
+
+.allergy-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.allergy-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.allergy-tag.forbidden {
+    background: #fef2f2;
+    color: #b91c1c;
+    border: 1px solid #fca5a5;
+}
+
+.allergy-tag.allowed {
+    background: #f0fdf4;
+    color: #15803d;
+    border: 1px solid #86efac;
+}
+
+.tag-remove {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+    padding: 0;
+    opacity: 0.5;
+    color: inherit;
+}
+
+.tag-remove:hover { opacity: 1; }
+
+.allergy-add-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.allergy-add-input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: 0.9rem;
+    background: var(--bg-warm);
+    color: var(--text-primary);
+}
+
+.allergy-add-input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.allergy-add-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.forbidden-add { background: #fef2f2; color: #b91c1c; }
+.forbidden-add:hover { background: #fee2e2; }
+.allowed-add   { background: #f0fdf4; color: #15803d; }
+.allowed-add:hover   { background: #dcfce7; }
+
+/* Ersatzstoffe */
+.substitution-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.substitution-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 0.88rem;
+    padding: 6px 10px;
+    background: var(--bg-warm);
+    border-radius: var(--radius-sm);
+}
+
+.sub-original {
+    font-weight: 600;
+    color: var(--text-primary);
+    min-width: 90px;
+}
+
+.sub-arrow {
+    color: var(--text-muted);
+}
+
+.sub-alts {
+    color: var(--text-secondary);
+    flex: 1;
+}
