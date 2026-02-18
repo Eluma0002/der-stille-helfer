@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/schema';
+import { useUser } from '../context/UserContext';
 import './Wochenplan.css';
 
 const DAYS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
@@ -38,6 +39,7 @@ function isToday(d) {
 }
 
 export default function Wochenplan() {
+    const { activeUserId } = useUser();
     const [plan, setPlan] = useState(() => {
         try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); }
         catch { return {}; }
@@ -86,6 +88,55 @@ export default function Wochenplan() {
 
     const clearWeek = () => {
         if (window.confirm('Ganzen Wochenplan löschen?')) savePlan({});
+    };
+
+    const [listMsg, setListMsg] = useState('');
+
+    const generateShoppingList = async () => {
+        const entries = Object.values(plan);
+        if (entries.length === 0) {
+            setListMsg('⚠️ Kein Rezept im Plan');
+            setTimeout(() => setListMsg(''), 2500);
+            return;
+        }
+        const uniqueIds = [...new Set(entries.map(e => e.id))];
+        const baseMatches  = await db.base_rezepte.bulkGet(uniqueIds);
+        const eigeneMatches = await db.eigene_rezepte.bulkGet(uniqueIds);
+
+        const allIngredients = [];
+        [...baseMatches, ...eigeneMatches].filter(Boolean).forEach(recipe => {
+            (recipe.zutaten || []).forEach(z => {
+                allIngredients.push(`${z.menge ? z.menge + ' ' : ''}${z.name}`.trim());
+            });
+        });
+
+        const seen = new Set();
+        const unique = allIngredients.filter(i => {
+            const key = i.toLowerCase();
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+        });
+
+        const existing = await db.einkaufsliste.where('person_id').equals(activeUserId).toArray();
+        const existingNames = new Set(existing.map(i => i.name.toLowerCase()));
+        const toAdd = unique.filter(i => !existingNames.has(i.toLowerCase()));
+
+        for (const item of toAdd) {
+            await db.einkaufsliste.add({
+                id: `wp-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+                person_id: activeUserId,
+                name: item,
+                checked: false,
+                created_at: Date.now()
+            });
+        }
+
+        const msg = toAdd.length === 0
+            ? '✓ Alle Zutaten bereits auf der Liste'
+            : `✓ ${toAdd.length} Zutat${toAdd.length > 1 ? 'en' : ''} zur Einkaufsliste hinzugefügt`;
+        setListMsg(msg);
+        setTimeout(() => setListMsg(''), 3000);
     };
 
     return (
@@ -157,8 +208,11 @@ export default function Wochenplan() {
             </div>
 
             {/* Einkaufsliste aus Plan generieren */}
-            <div className="wp-hint">
-                💡 Tippe auf ein Rezept im Koch-Assistent um Zutaten zur Einkaufsliste hinzuzufügen
+            <div className="wp-shopping-row">
+                <button className="wp-shopping-btn" onClick={generateShoppingList}>
+                    🛒 Einkaufsliste für diese Woche
+                </button>
+                {listMsg && <p className="wp-list-msg">{listMsg}</p>}
             </div>
 
             {/* Rezept-Picker Modal */}

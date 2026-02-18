@@ -327,3 +327,39 @@
     font-size: 0.9rem;
     margin: 0;
 }
+
+/* ── Einkaufsliste ───────────────────────────────── */
+.wp-shopping-row {
+    padding: 4px 4px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.wp-shopping-btn {
+    width: 100%;
+    padding: 13px 18px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 0.95rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.wp-shopping-btn:hover { background: var(--primary-dark); }
+
+.wp-list-msg {
+    margin: 0;
+    padding: 10px 14px;
+    background: var(--success-light);
+    color: var(--success);
+    border-radius: var(--radius-md);
+    font-size: 0.88rem;
+    font-weight: 500;
+    border-left: 3px solid var(--success);
+    animation: fadeIn 0.3s ease;
+}

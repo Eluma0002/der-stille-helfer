@@ -30,6 +30,7 @@ const RezeptDetails = () => {
     const [profileReady, setProfileReady] = useState(false);
     const [listMessage, setListMessage] = useState(null);
     const [copySuccess, setCopySuccess] = useState(false);
+    const [favAnim, setFavAnim] = useState(false);
 
     useEffect(() => {
         if (activeUserId) {
@@ -42,6 +43,30 @@ const RezeptDetails = () => {
         () => activeUserId ? db.eigene_rezepte.where({ id, person_id: activeUserId }).first() : null,
         [id, activeUserId]
     );
+    const isFavorite = useLiveQuery(
+        () => activeUserId
+            ? db.favoriten.where({ person_id: activeUserId, rezept_id: id }).first().then(f => !!f)
+            : false,
+        [id, activeUserId]
+    );
+
+    const toggleFavorite = async () => {
+        const existing = await db.favoriten.where({ person_id: activeUserId, rezept_id: id }).first();
+        if (existing) {
+            await db.favoriten.delete(existing.id);
+        } else {
+            await db.favoriten.add({
+                id: `fav-${Date.now()}`,
+                person_id: activeUserId,
+                rezept_type: baseRezept ? 'base' : 'eigene',
+                rezept_id: id,
+                starred_at: new Date().toISOString()
+            });
+            setFavAnim(true);
+            setTimeout(() => setFavAnim(false), 600);
+        }
+    };
+
     const profile = useLiveQuery(
         () => profileReady && activeUserId
             ? db.profile.where('person_id').equals(activeUserId).first()
@@ -133,6 +158,11 @@ const RezeptDetails = () => {
                 style={{ background: `linear-gradient(160deg, ${mealColor}cc 0%, ${mealColor}44 100%)` }}
             >
                 <button className="rezept-back-btn" onClick={() => navigate(-1)}>←</button>
+                <button
+                    className={`rezept-fav-btn ${isFavorite ? 'active' : ''} ${favAnim ? 'pop' : ''}`}
+                    onClick={toggleFavorite}
+                    title={isFavorite ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen'}
+                >{isFavorite ? '❤️' : '🤍'}</button>
                 <div className="rezept-hero-icon">{mealIcon}</div>
                 <h2 className="rezept-hero-title">{rezept.name}</h2>
                 <div className="rezept-hero-meta">
