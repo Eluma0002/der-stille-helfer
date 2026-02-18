@@ -2,6 +2,58 @@
     animation: fadeIn 0.3s ease-out;
 }
 
+/* ── KI-Anbieter Grid ───────────────────────────── */
+.ai-provider-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.ai-provider-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    padding: 12px 14px;
+    background: var(--bg-warm);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-family: inherit;
+    text-align: left;
+    transition: all 0.15s;
+}
+
+.ai-provider-btn:hover { border-color: var(--primary); }
+
+.ai-provider-btn.active {
+    background: var(--primary-light);
+    border-color: var(--primary);
+}
+
+.ai-p-name {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.ai-p-desc {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.ai-signup-hint {
+    margin: 6px 0 0;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.ai-signup-hint a {
+    color: var(--primary);
+    font-weight: 600;
+}
+
 .restrictions-info {
     color: var(--text-secondary);
     font-size: 0.9rem;

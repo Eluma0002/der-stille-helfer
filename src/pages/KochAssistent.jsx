@@ -1,9 +1,10 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/schema';
 import { useUser } from '../context/UserContext';
 import { KochBot } from '../bots/KochBot';
+import { askAI } from '../utils/aiApi';
 import './KochAssistent.css';
 
 const MEAL_CATEGORIES = [
@@ -191,7 +192,47 @@ const KochAssistent = () => {
     const getMealIcon  = (m) => MEAL_CATEGORIES.find(c => c.id === m)?.icon  ?? '🍽️';
     const getMealName  = (m) => MEAL_CATEGORIES.find(c => c.id === m)?.name  ?? m;
     const getMealColor = (m) => MEAL_COLORS[m] ?? MEAL_COLORS.all;
-    const getLink      = (r) => r.type === 'base' ? `/rezept/${r.id}` : `/eigenes-rezept/${r.id}`;
+    const getLink      = (r) => `/rezept/${r.id}`;
+
+    // ── KI-Chat ─────────────────────────────────────────────
+    const [chatOpen,    setChatOpen]    = useState(false);
+    const [chatInput,   setChatInput]   = useState('');
+    const [chatHistory, setChatHistory] = useState([]); // { role, content }
+    const [chatLoading, setChatLoading] = useState(false);
+    const [chatError,   setChatError]   = useState('');
+    const chatEndRef = useRef(null);
+
+    useEffect(() => {
+        if (chatOpen) chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [chatHistory, chatOpen]);
+
+    const sendMessage = async () => {
+        const q = chatInput.trim();
+        if (!q || chatLoading) return;
+        const provider = localStorage.getItem('ai_provider') || 'groq';
+        const apiKey   = localStorage.getItem('ai_key') || '';
+
+        setChatHistory(h => [...h, { role: 'user', content: q }]);
+        setChatInput('');
+        setChatLoading(true);
+        setChatError('');
+
+        try {
+            const answer = await askAI({
+                provider,
+                apiKey,
+                question: q,
+                history: chatHistory,
+                context: { produkte, profile: userProfile },
+            });
+            setChatHistory(h => [...h, { role: 'assistant', content: answer }]);
+        } catch (err) {
+            setChatError(err.message);
+            setChatHistory(h => h.slice(0, -1)); // Remove last user msg on error
+        } finally {
+            setChatLoading(false);
+        }
+    };
 
     const addMissingToShoppingList = async (missingItems) => {
         try {
@@ -359,6 +400,89 @@ const KochAssistent = () => {
                     </p>
                 </div>
             )}
+
+            {/* ── KI-Koch Chat ─────────────────────────────── */}
+            <div className="ai-chat-section">
+                <button
+                    className="ai-chat-toggle"
+                    onClick={() => setChatOpen(o => !o)}
+                >
+                    <span>🤖 KI-Koch fragen</span>
+                    <span className={`ai-chevron ${chatOpen ? 'open' : ''}`}>▼</span>
+                </button>
+
+                {chatOpen && (
+                    <div className="ai-chat-body">
+                        {!localStorage.getItem('ai_key') && (
+                            <div className="ai-no-key">
+                                🔑 Noch kein API-Key gesetzt.{' '}
+                                <a href="#/einstellungen">Einstellungen → KI-Koch</a>
+                            </div>
+                        )}
+
+                        {/* Vorschläge wenn Chat leer */}
+                        {chatHistory.length === 0 && (
+                            <div className="ai-suggestions">
+                                {[
+                                    'Was kann ich heute kochen?',
+                                    'Rezept mit Resten aus meinem Kühlschrank',
+                                    'Was kann ich statt Milch verwenden?',
+                                ].map(s => (
+                                    <button
+                                        key={s}
+                                        className="ai-suggestion-chip"
+                                        onClick={() => { setChatInput(s); }}
+                                    >{s}</button>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Nachrichten */}
+                        <div className="ai-messages">
+                            {chatHistory.map((msg, i) => (
+                                <div key={i} className={`ai-msg ${msg.role}`}>
+                                    {msg.role === 'assistant' && (
+                                        <span className="ai-msg-avatar">🤖</span>
+                                    )}
+                                    <div className="ai-msg-bubble">{msg.content}</div>
+                                </div>
+                            ))}
+                            {chatLoading && (
+                                <div className="ai-msg assistant">
+                                    <span className="ai-msg-avatar">🤖</span>
+                                    <div className="ai-msg-bubble ai-typing">
+                                        <span /><span /><span />
+                                    </div>
+                                </div>
+                            )}
+                            {chatError && (
+                                <div className="ai-error">{chatError}</div>
+                            )}
+                            <div ref={chatEndRef} />
+                        </div>
+
+                        {/* Input */}
+                        <div className="ai-input-row">
+                            <input
+                                type="text"
+                                className="ai-input"
+                                placeholder="Frag den KI-Koch..."
+                                value={chatInput}
+                                onChange={e => setChatInput(e.target.value)}
+                                onKeyDown={e => e.key === 'Enter' && sendMessage()}
+                                disabled={chatLoading}
+                            />
+                            <button
+                                className="ai-send-btn"
+                                onClick={sendMessage}
+                                disabled={chatLoading || !chatInput.trim()}
+                            >
+                                {chatLoading ? '⏳' : '↑'}
+                            </button>
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

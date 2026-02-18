@@ -3,6 +3,7 @@ import { db, ensureProfileExists } from '../db/schema';
 import { useUser } from '../context/UserContext';
 import { strings } from '../strings/de';
 import { ELVIS_PROFILE } from '../bots/substitutions';
+import { AI_PROVIDERS } from '../utils/aiApi';
 import './Einstellungen.css';
 
 const EMPTY_ALLERGY_PROFILE = { forbidden: [], allowed: [], excluded: [], substitutions: {} };
@@ -14,6 +15,19 @@ const Einstellungen = () => {
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
     const [formData, setFormData] = useState({ name: '', preferences: '' });
+
+    // KI-Einstellungen (localStorage)
+    const [aiProvider, setAiProvider] = useState(() => localStorage.getItem('ai_provider') || 'groq');
+    const [apiKey, setApiKey]         = useState(() => localStorage.getItem('ai_key') || '');
+    const [aiSaved, setAiSaved]       = useState(false);
+    const [aiOpen, setAiOpen]         = useState(false);
+
+    const saveAiSettings = () => {
+        localStorage.setItem('ai_provider', aiProvider);
+        localStorage.setItem('ai_key', apiKey);
+        setAiSaved(true);
+        setTimeout(() => setAiSaved(false), 2500);
+    };
 
     // Allergieprofil
     const [allergyOpen, setAllergyOpen] = useState(false);
@@ -283,6 +297,65 @@ const Einstellungen = () => {
                         )}
                     </div>
                 )}
+            </div>
+
+            {/* KI-Koch Einstellungen */}
+            <div className="card allergy-card">
+                <button className="allergy-header" onClick={() => setAiOpen(o => !o)} type="button">
+                    <span className="allergy-header-title">
+                        🤖 KI-Koch Einstellungen
+                        {apiKey && <span className="allergy-count" style={{ background: '#27AE60' }}>✓</span>}
+                    </span>
+                    <span className={`allergy-chevron ${aiOpen ? 'open' : ''}`}>▼</span>
+                </button>
+                {aiOpen && (
+                    <div className="allergy-body">
+                        <div className="form-group">
+                            <label>KI-Anbieter wählen</label>
+                            <div className="ai-provider-grid">
+                                {Object.entries(AI_PROVIDERS).map(([key, p]) => (
+                                    <button
+                                        key={key}
+                                        type="button"
+                                        className={`ai-provider-btn ${aiProvider === key ? 'active' : ''}`}
+                                        onClick={() => setAiProvider(key)}
+                                    >
+                                        <span className="ai-p-name">{p.name}</span>
+                                        <span className="ai-p-desc">{p.description}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="form-group">
+                            <label>API-Key für {AI_PROVIDERS[aiProvider]?.name}</label>
+                            <input
+                                type="password"
+                                placeholder="Hier API-Key einfügen..."
+                                value={apiKey}
+                                onChange={e => setApiKey(e.target.value)}
+                            />
+                            <p className="ai-signup-hint">
+                                Noch keinen Key?{' '}
+                                <a href={AI_PROVIDERS[aiProvider]?.signupUrl} target="_blank" rel="noreferrer">
+                                    Kostenlos registrieren →
+                                </a>
+                            </p>
+                        </div>
+                        {aiSaved && <p className="success">KI-Einstellungen gespeichert ✓</p>}
+                        <button type="button" className="btn primary" onClick={saveAiSettings}>
+                            💾 KI-Einstellungen speichern
+                        </button>
+                    </div>
+                )}
+            </div>
+
+            {/* Weitere Seiten */}
+            <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <h3>Weitere Funktionen</h3>
+                <a href="#/wochenplan"  style={{ color: 'var(--primary)', textDecoration: 'none', fontWeight: 600 }}>📅 Wochenplan</a>
+                <a href="#/favoriten"  style={{ color: 'var(--primary)', textDecoration: 'none', fontWeight: 600 }}>⭐ Favoriten</a>
+                <a href="#/backup"     style={{ color: 'var(--primary)', textDecoration: 'none', fontWeight: 600 }}>💾 Backup / Export</a>
+                <a href="#/notizen"    style={{ color: 'var(--primary)', textDecoration: 'none', fontWeight: 600 }}>📝 Notizen & eigene Rezepte</a>
             </div>
 
             {/* Reset */}
