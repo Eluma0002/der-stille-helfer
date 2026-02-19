@@ -258,8 +258,6 @@ const RezeptDetails = () => {
                     <p className="anleitung-text">{rezept.anleitung}</p>
                 </div>
             )}
-        </div>
-
         {/* ── Zutaten-Auswahl Modal ─────────────────── */}
         {showIngModal && (
             <div className="inv-modal-overlay" onClick={() => setShowIngModal(false)}>
@@ -306,6 +304,7 @@ const RezeptDetails = () => {
                 </div>
             </div>
         )}
+    </div>
     );
 };
 
