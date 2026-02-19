@@ -40,8 +40,16 @@ const RezepteListe = () => {
     useEffect(() => {
         const init = async () => {
             const count = await db.base_rezepte.count();
-            if (count === 0) await db.base_rezepte.bulkAdd(SAMPLE_RECIPES);
-            else await migrateRecipes();
+            if (count === 0) {
+                await db.base_rezepte.bulkAdd(SAMPLE_RECIPES);
+            } else {
+                // Neue Rezepte zu bestehenden DBs hinzufügen
+                const existing = await db.base_rezepte.toArray();
+                const existingIds = new Set(existing.map(r => r.id));
+                const newRecipes = SAMPLE_RECIPES.filter(r => !existingIds.has(r.id));
+                if (newRecipes.length > 0) await db.base_rezepte.bulkAdd(newRecipes);
+                await migrateRecipes();
+            }
         };
         init();
     }, []);
