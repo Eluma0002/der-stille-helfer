@@ -25,6 +25,35 @@ const MEAL_COLORS = {
     all:         '#F97316',
 };
 
+const getRecipeEmoji = (name) => {
+    const l = (name || '').toLowerCase();
+    if (/smoothie/.test(l))                              return '🥤';
+    if (/müsli|granola|porridge|haferflocken/.test(l))   return '🥣';
+    if (/pfannkuchen|pancake|crêpe/.test(l))             return '🥞';
+    if (/rührei|spiegelei|omelette/.test(l))             return '🍳';
+    if (/avocado/.test(l))                               return '🥑';
+    if (/joghurt|quark/.test(l))                         return '🫙';
+    if (/french toast/.test(l))                          return '🍞';
+    if (/pizza|flammkuchen/.test(l))                     return '🍕';
+    if (/pasta|spaghetti|nudel|carbonara|pesto|bolognese/.test(l)) return '🍝';
+    if (/wrap|burrito|fajita/.test(l))                   return '🌯';
+    if (/suppe|eintopf|linsen|erbsen/.test(l))           return '🍲';
+    if (/griechisch/.test(l))                            return '🫒';
+    if (/salat|coleslaw|caesar/.test(l))                 return '🥗';
+    if (/lachs|fisch|thunfisch/.test(l))                 return '🐟';
+    if (/hähnchen|huhn|hühnchen|chicken/.test(l))        return '🍗';
+    if (/bratwurst|wurst/.test(l))                       return '🌭';
+    if (/schnitzel|schweinefilet|putenbrust|steak/.test(l)) return '🥩';
+    if (/chili/.test(l))                                 return '🌶️';
+    if (/reis/.test(l))                                  return '🍚';
+    if (/kartoffel/.test(l))                             return '🥔';
+    if (/bananenbrot|kuchen|muffin/.test(l))             return '🧁';
+    if (/energie/.test(l))                               return '⚡';
+    if (/käse/.test(l))                                  return '🧀';
+    if (/brot|toast/.test(l))                            return '🍞';
+    return '🍽️';
+};
+
 const RezepteListe = () => {
     const { activeUserId } = useUser();
     const [search, setSearch]         = useState('');
@@ -142,7 +171,7 @@ const RezepteListe = () => {
                                     className="rezept-card-visual"
                                     style={{ background: `linear-gradient(135deg, ${color}bb, ${color}44)` }}
                                 >
-                                    <span className="rezept-card-icon">{cat?.icon ?? '🍽️'}</span>
+                                    <span className="rezept-card-icon">{getRecipeEmoji(r.name)}</span>
                                 </div>
 
                                 <div className="rezept-card-content">
