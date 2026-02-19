@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Movie librarians Admin</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="stage-center">
+      <header class="hero">
+        <div class="brand">
+          <h1>Admin · Backstage</h1>
+          <p>Nicht sichtbar für Kunden. Hier pflegst du deine Empfehlungen.</p>
+        </div>
+        <a class="trailer-btn" href="./index.html">Zur Kundenansicht</a>
+      </header>
+
+      <main class="layout">
+        <section id="adminLoginPanel" class="panel">
+          <h2>Admin-Zugang</h2>
+          <p>Beim ersten Start: eigenen Zugang mit E-Mail + PIN anlegen. Alles wird lokal auf diesem Gerät gespeichert.</p>
+
+          <div id="adminSetupCard" class="auth-card hidden">
+            <h3>Neuen Zugang anlegen</h3>
+            <form id="adminSetupForm" class="filters">
+              <label>E-Mail<input id="adminEmailSetup" type="email" required /></label>
+              <label>PIN (mind. 4 Zeichen)<input id="adminPinSetup" type="password" minlength="4" required /></label>
+              <label>PIN wiederholen<input id="adminPinSetupRepeat" type="password" minlength="4" required /></label>
+              <label>Wiederherstellungs-Code (optional)<input id="adminRecoverySetup" type="text" placeholder="z.B. HOLLYWOOD-2026" /></label>
+              <button type="submit">Zugang erstellen</button>
+            </form>
+          </div>
+
+          <div id="adminLoginCard" class="auth-card hidden">
+            <h3>Einloggen</h3>
+            <form id="adminLoginForm" class="filters">
+              <label>E-Mail<input id="adminEmailLogin" type="email" required /></label>
+              <label>PIN<input id="adminPinLogin" type="password" required /></label>
+              <button type="submit">Einloggen</button>
+            </form>
+          </div>
+
+          <div id="adminResetCard" class="auth-card hidden">
+            <h3>PIN zurücksetzen</h3>
+            <form id="adminResetForm" class="filters">
+              <label>E-Mail<input id="adminEmailReset" type="email" required /></label>
+              <label>Wiederherstellungs-Code<input id="adminRecoveryReset" type="text" required /></label>
+              <label>Neue PIN<input id="adminPinReset" type="password" minlength="4" required /></label>
+              <button type="submit">PIN zurücksetzen</button>
+            </form>
+          </div>
+        </section>
+
+        <section id="adminPanel" class="panel hidden">
+          <h2>Branding</h2>
+          <form id="brandForm" class="filters">
+            <label>App-Name oben<input id="brandInput" type="text" placeholder="z.B. Elvis' Video-Lounge" /></label>
+            <button type="submit">Namen speichern</button>
+          </form>
+
+          <h2>Videotheker-Profile</h2>
+          <form id="personForm" class="admin-form">
+            <label>Name<input id="personName" type="text" required /></label>
+            <label>Über mich / Stichpunkte<input id="personAbout" type="text" placeholder="z.B. Liebt 80er, ruhige Dramen" required /></label>
+            <label>Hobbys (Komma)<input id="personHobbies" type="text" placeholder="Kino, Vinyl, Fotografie" required /></label>
+            <label>Avatar/Foto URL (optional)<input id="personAvatarUrl" type="url" /></label>
+            <label>Oder echtes Foto hochladen<input id="personPhoto" type="file" accept="image/*" /></label>
+            <button type="submit">Profil speichern</button>
+          </form>
+          <div id="personList" class="library-list"></div>
+
+          <h2>Eintrag erstellen (Kino / Film / Serie)</h2>
+          <form id="entryForm" class="admin-form">
+            <label>Videotheker
+              <select id="entryOwner" required></select>
+            </label>
+            <label>Titel<input id="entryTitle" type="text" required /></label>
+            <label>Typ<select id="entryType"><option>film</option><option>serie</option><option>kino</option></select></label>
+            <label>Jahr<input id="entryYear" type="number" min="1900" max="2100" required /></label>
+            <label>Stimmung (Komma)<input id="entryMood" type="text" required /></label>
+            <label>Energie<input id="entryEnergy" type="text" required /></label>
+            <label>Situation (Komma)<input id="entryWhen" type="text" required /></label>
+            <label>Tipp<input id="entryTip" type="text" required /></label>
+            <label>Ehrliche Notiz<input id="entryHonest" type="text" required /></label>
+            <label>Warnung<input id="entryWarning" type="text" required /></label>
+            <label>Poster URL<input id="entryPoster" type="url" /></label>
+            <label>Trailer URL<input id="entryTrailer" type="url" /></label>
+            <label>Bereich
+              <select id="entryWhere">
+                <option value="kino">Kino</option>
+                <option value="film">Film</option>
+                <option value="serie">Serie</option>
+              </select>
+            </label>
+            <button type="submit">Eintrag speichern</button>
+          </form>
+
+          <div class="tool-row">
+            <button id="exportBtn" type="button">Export JSON</button>
+            <button id="importBtn" type="button">Import JSON</button>
+            <input id="importInput" type="file" accept="application/json" class="hidden" />
+          </div>
+        </section>
+
+        <section id="adminListPanel" class="panel hidden">
+          <h2>Vorhandene Einträge</h2>
+          <div id="adminList" class="library-list"></div>
+        </section>
+      </main>
+    </div>
+
+    <script src="./admin.js"></script>
+  </body>
+</html>
