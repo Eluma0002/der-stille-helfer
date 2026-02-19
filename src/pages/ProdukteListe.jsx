@@ -80,6 +80,29 @@ const ProdukteListe = () => {
     const [showScanner, setShowScanner] = useState(false);
     const [scanMessage, setScanMessage] = useState('');
 
+    // Produkt bearbeiten
+    const [editProduct, setEditProduct] = useState(null); // { id, name, kategorie, ablauf }
+
+    const openEdit = (p) => setEditProduct({
+        id: p.id,
+        name: p.name,
+        kategorie: p.kategorie || p.ort || 'kuehlschrank',
+        ablauf: p.ablauf ? new Date(p.ablauf).toISOString().slice(0, 10) : ''
+    });
+
+    const saveEdit = async () => {
+        if (!editProduct || !editProduct.name.trim()) return;
+        await db.produkte.update(editProduct.id, {
+            name: editProduct.name.trim(),
+            kategorie: editProduct.kategorie,
+            ort: editProduct.kategorie,
+            ablauf: editProduct.ablauf
+                ? new Date(editProduct.ablauf).toISOString()
+                : new Date(Date.now() + 7 * 86400000).toISOString()
+        });
+        setEditProduct(null);
+    };
+
     // Einkaufsliste
     const [einkaufName, setEinkaufName] = useState('');
     const [einkaufOpen, setEinkaufOpen] = useState(true);
@@ -373,10 +396,11 @@ const ProdukteListe = () => {
                                                 key={p.id}
                                                 className="produkt-card"
                                                 style={{ borderTopColor: cat.color }}
+                                                onClick={() => openEdit(p)}
                                             >
                                                 <button
                                                     className="produkt-card-delete"
-                                                    onClick={() => handleDelete(p)}
+                                                    onClick={(e) => { e.stopPropagation(); handleDelete(p); }}
                                                     disabled={isLoading}
                                                     title="Löschen"
                                                 >×</button>
@@ -519,6 +543,48 @@ const ProdukteListe = () => {
                 )}
             </div>
         </div>
+
+        {/* Produkt bearbeiten Modal */}
+        {editProduct && (
+            <div className="inv-modal-overlay" onClick={() => setEditProduct(null)}>
+                <div className="inv-modal" onClick={e => e.stopPropagation()}>
+                    <h3>✏️ Produkt bearbeiten</h3>
+                    <div className="form-group" style={{ marginTop: 12 }}>
+                        <label>Name</label>
+                        <input
+                            type="text"
+                            value={editProduct.name}
+                            onChange={e => setEditProduct(s => ({ ...s, name: e.target.value }))}
+                            onKeyDown={e => e.key === 'Enter' && saveEdit()}
+                            autoFocus
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>Kategorie</label>
+                        <select
+                            value={editProduct.kategorie}
+                            onChange={e => setEditProduct(s => ({ ...s, kategorie: e.target.value }))}
+                        >
+                            {DEFAULT_CATEGORIES.map(c => (
+                                <option key={c.id} value={c.id}>{c.icon} {c.name}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="form-group">
+                        <label>Ablaufdatum</label>
+                        <input
+                            type="date"
+                            value={editProduct.ablauf}
+                            onChange={e => setEditProduct(s => ({ ...s, ablauf: e.target.value }))}
+                        />
+                    </div>
+                    <div className="inv-modal-actions">
+                        <button className="btn secondary" onClick={() => setEditProduct(null)}>Abbrechen</button>
+                        <button className="btn primary" onClick={saveEdit}>✓ Speichern</button>
+                    </div>
+                </div>
+            </div>
+        )}
     );
 };
 
