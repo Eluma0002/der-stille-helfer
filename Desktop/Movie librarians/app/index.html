@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Movie librarians</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="stage-center">
+      <header class="hero">
+        <div class="brand">
+          <h1 id="brandTitle">Movie librarians</h1>
+          <p>Tipps wie an der Videothek-Theke: schnell, persönlich, direkt.</p>
+        </div>
+        <div class="hero-actions">
+          <a class="trailer-btn" href="./admin.html">🎭 Hinter den Vorhang</a>
+        </div>
+      </header>
+
+      <main class="layout">
+        <section class="grand-welcome panel">
+          <p class="eyebrow">🎬 Heute, wonach ist dir?</p>
+          <h2>Hol dir deinen <span>nächsten Tipp</span></h2>
+          <p>Wähle Gefühl + Bereich (Kino, Film, Serie). Wir liefern dir sofort einen passenden Vorschlag.</p>
+          <div class="quick-moods">
+            <button type="button" data-quick-mood="lustig">Lustig</button>
+            <button type="button" data-quick-mood="action">Action</button>
+            <button type="button" data-quick-mood="liebe">Liebe</button>
+            <button type="button" data-quick-mood="nachdenklich">Nachdenklich</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <form id="filterForm" class="filters">
+            <label>Stimmung<select id="moodSelect"><option value="">Alles</option></select></label>
+            <label>Energie<select id="energySelect"><option value="">Alles</option></select></label>
+            <label>Situation<select id="whenSelect"><option value="">Alles</option></select></label>
+            <label>
+              Bereich
+              <select id="typeSelect">
+                <option value="">Alle</option>
+                <option value="kino">Kino</option>
+                <option value="film">Film</option>
+                <option value="serie">Serie</option>
+              </select>
+            </label>
+            <button type="submit">Tipp anzeigen</button>
+          </form>
+        </section>
+
+        <section class="panel person-panel">
+          <h2>Dein Videotheker</h2>
+          <label>
+            Person
+            <select id="personSelect">
+              <option value="">Bitte wählen</option>
+            </select>
+          </label>
+          <article id="personCard" class="owner-card owner-card-large hidden"></article>
+        </section>
+
+        <section class="panel">
+          <h2>Empfehlung</h2>
+          <article id="recommendationCard" class="recommendation hidden"></article>
+        </section>
+      </main>
+
+      <footer class="footer">Deine persönliche Empfehlungs-Theke</footer>
+    </div>
+    <script src="./app.js"></script>
+  </body>
+</html>
