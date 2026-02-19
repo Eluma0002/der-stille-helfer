@@ -542,10 +542,9 @@ const ProdukteListe = () => {
                     </div>
                 )}
             </div>
-        </div>
 
-        {/* Produkt bearbeiten Modal */}
-        {editProduct && (
+            {/* Produkt bearbeiten Modal */}
+            {editProduct && (
             <div className="inv-modal-overlay" onClick={() => setEditProduct(null)}>
                 <div className="inv-modal" onClick={e => e.stopPropagation()}>
                     <h3>✏️ Produkt bearbeiten</h3>
@@ -585,6 +584,7 @@ const ProdukteListe = () => {
                 </div>
             </div>
         )}
+        </div>
     );
 };
 
