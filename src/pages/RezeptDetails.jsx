@@ -31,6 +31,8 @@ const RezeptDetails = () => {
     const [listMessage, setListMessage] = useState(null);
     const [copySuccess, setCopySuccess] = useState(false);
     const [favAnim, setFavAnim] = useState(false);
+    const [showIngModal, setShowIngModal] = useState(false);
+    const [selectedZutaten, setSelectedZutaten] = useState(new Set());
 
     useEffect(() => {
         if (activeUserId) {
@@ -118,16 +120,22 @@ const RezeptDetails = () => {
     };
 
     // ── Einkaufsliste ─────────────────────────────────
-    const addToShoppingList = async () => {
+    const openIngModal = () => {
         if (!rezept?.zutaten?.length) return;
+        setSelectedZutaten(new Set(rezept.zutaten.map((_, i) => i)));
+        setShowIngModal(true);
+    };
+
+    const confirmAddToShoppingList = async () => {
         const existing = await db.einkaufsliste.where('person_id').equals(activeUserId).toArray();
         const existingNames = existing.map(i => i.name.toLowerCase().trim());
-        let added = 0, already = 0;
-        for (const z of rezept.zutaten) {
+        let added = 0;
+        for (const [i, z] of rezept.zutaten.entries()) {
+            if (!selectedZutaten.has(i)) continue;
             const label = `${z.menge ? z.menge + ' ' : ''}${z.name}`.trim();
-            if (existingNames.includes(label.toLowerCase())) { already++; continue; }
+            if (existingNames.includes(label.toLowerCase())) continue;
             await db.einkaufsliste.add({
-                id: `${Date.now()}-${added}`,
+                id: `eink-${Date.now()}-${i}`,
                 person_id: activeUserId,
                 name: label,
                 checked: false,
@@ -136,10 +144,22 @@ const RezeptDetails = () => {
             added++;
             existingNames.push(label.toLowerCase());
         }
-        if (added === 0) setListMessage(strings.recipe.allAlreadyOnList);
-        else if (already === 0) setListMessage(strings.recipe.addedToList.replace('{count}', added));
-        else setListMessage(strings.recipe.someAlreadyOnList.replace('{count}', added).replace('{existing}', already));
-        setTimeout(() => setListMessage(null), 3000);
+        setShowIngModal(false);
+        if (added > 0) {
+            setListMessage(`${added} Zutat${added > 1 ? 'en' : ''} zur Einkaufsliste hinzugefügt`);
+            setTimeout(() => setListMessage(null), 3000);
+        }
+    };
+
+    // ── Rezept löschen ────────────────────────────────
+    const deleteRecipe = async () => {
+        if (!window.confirm(`„${rezept.name}" wirklich löschen?`)) return;
+        if (userRezept) {
+            await db.eigene_rezepte.delete(id);
+        } else {
+            await db.base_rezepte.update(id, { hidden: true });
+        }
+        navigate(-1);
     };
 
     if (baseRezept === undefined) {
@@ -174,7 +194,7 @@ const RezeptDetails = () => {
 
             {/* ── Aktionen ──────────────────────────────── */}
             <div className="rezept-actions">
-                <button className="action-btn shopping-btn" onClick={addToShoppingList}>
+                <button className="action-btn shopping-btn" onClick={openIngModal}>
                     🛒 Einkaufsliste
                 </button>
                 <button className="action-btn copy-btn" onClick={copyRecipe}>
@@ -182,6 +202,9 @@ const RezeptDetails = () => {
                 </button>
                 <button className="action-btn whatsapp-btn" onClick={shareViaWhatsApp}>
                     📲 WhatsApp
+                </button>
+                <button className="action-btn delete-btn" onClick={deleteRecipe}>
+                    🗑
                 </button>
             </div>
 
@@ -236,6 +259,53 @@ const RezeptDetails = () => {
                 </div>
             )}
         </div>
+
+        {/* ── Zutaten-Auswahl Modal ─────────────────── */}
+        {showIngModal && (
+            <div className="inv-modal-overlay" onClick={() => setShowIngModal(false)}>
+                <div className="inv-modal" onClick={e => e.stopPropagation()}>
+                    <h3>🛒 Zutaten auswählen</h3>
+                    <p className="inv-modal-name">„{rezept.name}"</p>
+                    <div className="ing-select-all-row">
+                        <button className="btn small secondary" onClick={() => setSelectedZutaten(new Set(rezept.zutaten.map((_, i) => i)))}>
+                            Alle
+                        </button>
+                        <button className="btn small secondary" onClick={() => setSelectedZutaten(new Set())}>
+                            Keine
+                        </button>
+                    </div>
+                    <div className="ing-checklist">
+                        {rezept.zutaten.map((z, i) => (
+                            <label key={i} className="ing-check-row">
+                                <input
+                                    type="checkbox"
+                                    checked={selectedZutaten.has(i)}
+                                    onChange={e => {
+                                        const next = new Set(selectedZutaten);
+                                        if (e.target.checked) next.add(i);
+                                        else next.delete(i);
+                                        setSelectedZutaten(next);
+                                    }}
+                                />
+                                <span className="ing-check-label">
+                                    {z.menge && <strong>{z.menge} </strong>}{z.name}
+                                </span>
+                            </label>
+                        ))}
+                    </div>
+                    <div className="inv-modal-actions">
+                        <button className="btn secondary" onClick={() => setShowIngModal(false)}>Abbrechen</button>
+                        <button
+                            className="btn primary"
+                            onClick={confirmAddToShoppingList}
+                            disabled={selectedZutaten.size === 0}
+                        >
+                            ✓ {selectedZutaten.size} hinzufügen
+                        </button>
+                    </div>
+                </div>
+            </div>
+        )}
     );
 };
 

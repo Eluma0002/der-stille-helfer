@@ -88,6 +88,7 @@ const RezepteListe = () => {
         : (baseRezepte   || []);
 
     const filtered = sourceRecipes.filter(r => {
+        if (r.hidden) return false;
         const matchesSearch = r.name.toLowerCase().includes(search.toLowerCase());
         const matchesMeal   = mealFilter === 'all' || r.mahlzeit === mealFilter;
         return matchesSearch && matchesMeal;

@@ -131,6 +131,57 @@
     color: white;
 }
 
+.delete-btn {
+    flex: 0;
+    padding: 11px 14px;
+    background: var(--danger-light);
+    color: var(--danger);
+    border: 1px solid #f5c6b8;
+}
+
+.delete-btn:hover { background: var(--danger); color: white; }
+
+/* ── Zutaten-Auswahl Modal ──────────────────────── */
+.ing-select-all-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.ing-checklist {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    max-height: 50vh;
+    overflow-y: auto;
+    margin-bottom: 16px;
+}
+
+.ing-check-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.ing-check-row:hover { background: var(--bg-warm); }
+
+.ing-check-row input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary);
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.ing-check-label {
+    font-size: 0.95rem;
+    color: var(--text);
+}
+
 .list-message {
     margin: 0 16px 4px;
     padding: 10px 14px;

@@ -109,7 +109,7 @@ const KochAssistent = () => {
     );
 
     const allRezepte = useMemo(() => {
-        const base   = baseRezepte?.map(r => ({ ...r, type: 'base' }))   || [];
+        const base   = baseRezepte?.filter(r => !r.hidden).map(r => ({ ...r, type: 'base' })) || [];
         const eigene = eigeneRezepte?.map(r => ({ ...r, type: 'eigene' })) || [];
         return [...base, ...eigene];
     }, [baseRezepte, eigeneRezepte]);
@@ -408,7 +408,16 @@ const KochAssistent = () => {
                     onClick={() => setChatOpen(o => !o)}
                 >
                     <span>🤖 KI-Koch fragen</span>
-                    <span className={`ai-chevron ${chatOpen ? 'open' : ''}`}>▼</span>
+                    <div className="ai-toggle-right">
+                        {chatHistory.length > 0 && (
+                            <button
+                                className="chat-clear-btn"
+                                onClick={e => { e.stopPropagation(); setChatHistory([]); setChatError(''); }}
+                                title="Chat zurücksetzen"
+                            >↺</button>
+                        )}
+                        <span className={`ai-chevron ${chatOpen ? 'open' : ''}`}>▼</span>
+                    </div>
                 </button>
 
                 {chatOpen && (
