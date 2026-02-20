@@ -7,18 +7,54 @@ import { strings } from '../strings/de';
 import BarcodeScanner from '../components/BarcodeScanner';
 import { searchProduct } from '../api/openfoodfacts';
 import ProductIcon from '../components/ProductIcon';
-import { analyzePhoto, analyzeReceipt, isKIConfigured, compressImage } from '../utils/aiService';
 import './ProdukteListe.css';
 
-const MAX_ITEMS_PER_CAT = 20;
+const getExpiryText = (ablaufDate) => {
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    const expiry = new Date(ablaufDate);
+    expiry.setHours(0, 0, 0, 0);
+    const diffMs = expiry - now;
+    const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
 
-const SCANNER_TABS = [
-    { id: 'barcode', label: 'Barcode', icon: '📊' },
-    { id: 'foto', label: 'Foto-KI', icon: '📸' },
-    { id: 'kassenbon', label: 'Kassenbon', icon: '🧾' },
-    { id: 'sprache', label: 'Sprache', icon: '🎤', noKey: true },
-    { id: 'zettel', label: 'Zettel', icon: '📝', noKey: true },
+    if (diffDays < 0)  return { text: 'abgelaufen', className: 'expiry-expired' };
+    if (diffDays === 0) return { text: 'heute', className: 'expiry-today' };
+    if (diffDays === 1) return { text: 'morgen', className: 'expiry-soon' };
+    if (diffDays < 7)  return { text: `noch ${diffDays} Tage`, className: 'expiry-ok' };
+    const weeks = Math.floor(diffDays / 7);
+    if (weeks < 4)     return { text: `noch ${weeks} Wochen`, className: 'expiry-good' };
+    return { text: `noch ${diffDays} Tage`, className: 'expiry-good' };
+};
+
+// ── Häufigkeits-Sortierung ────────────────────────
+const COMMON_PRODUCTS = [
+    'milch', 'butter', 'eier', 'ei', 'joghurt', 'käse', 'quark', 'sahne',
+    'rahm', 'frischkäse', 'mozzarella', 'cheddar',
+    'brot', 'toast', 'brötchen', 'semmel',
+    'apfel', 'banane', 'orange', 'traube', 'beere', 'erdbeere',
+    'kartoffel', 'tomate', 'gurke', 'zwiebel', 'karotte', 'möhre',
+    'paprika', 'spinat', 'salat', 'zucchini',
+    'nudeln', 'pasta', 'spaghetti', 'reis', 'mehl', 'zucker',
+    'salz', 'pfeffer', 'öl', 'olivenöl', 'essig',
+    'wasser', 'saft', 'kaffee', 'tee', 'cola',
+    'fleisch', 'huhn', 'hühnchen', 'hack', 'wurst', 'schinken',
+    'fisch', 'lachs', 'thunfisch',
+    'schokolade', 'marmelade', 'honig', 'nuss',
 ];
+
+const getProductPriority = (name) => {
+    const lower = name.toLowerCase();
+    const idx = COMMON_PRODUCTS.findIndex(p => lower.includes(p));
+    return idx === -1 ? COMMON_PRODUCTS.length : idx;
+};
+
+// hex → "r, g, b" for rgba()
+const hexToRgb = (hex) => {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `${r}, ${g}, ${b}`;
+};
 
 // ── Kategorie-Tipp ohne API ──────────────────────────────────────────────────
 function guessCategory(name) {
@@ -32,37 +68,16 @@ function guessCategory(name) {
     return 'vorrat';
 }
 
-const getExpiryText = (ablaufDate) => {
-    const now = new Date();
-    now.setHours(0, 0, 0, 0);
-    const expiry = new Date(ablaufDate);
-    expiry.setHours(0, 0, 0, 0);
-    const diffMs = expiry - now;
-    const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
-
-    if (diffDays < 0) return { text: 'abgelaufen', className: 'expiry-expired' };
-    if (diffDays === 0) return { text: 'heute', className: 'expiry-today' };
-    if (diffDays === 1) return { text: 'morgen', className: 'expiry-soon' };
-    if (diffDays < 7) return { text: `noch ${diffDays} Tage`, className: 'expiry-ok' };
-    const weeks = Math.floor(diffDays / 7);
-    if (weeks < 4) return { text: `noch ${weeks} Wochen`, className: 'expiry-good' };
-    return { text: `noch ${diffDays} Tage`, className: 'expiry-good' };
-};
-
-// AI items review component
-const AiItemsReview = ({ items, onConfirm, onCancel }) => {
+// ── Artikel-Prüf-Dialog (für Sprache + OCR) ─────────────────────────────────
+function ItemsReview({ items, onConfirm, onCancel }) {
     const [selected, setSelected] = useState(items.map((_, i) => i));
     const [itemData, setItemData] = useState(items);
 
-    const toggleItem = (idx) => {
-        setSelected(prev =>
-            prev.includes(idx) ? prev.filter(i => i !== idx) : [...prev, idx]
-        );
-    };
+    const toggleItem = (idx) =>
+        setSelected(prev => prev.includes(idx) ? prev.filter(i => i !== idx) : [...prev, idx]);
 
-    const handleKatChange = (idx, kat) => {
+    const handleKatChange = (idx, kat) =>
         setItemData(prev => prev.map((item, i) => i === idx ? { ...item, kategorie: kat } : item));
-    };
 
     return (
         <div className="ai-review">
@@ -70,11 +85,7 @@ const AiItemsReview = ({ items, onConfirm, onCancel }) => {
             <div className="ai-review-list">
                 {itemData.map((item, idx) => (
                     <label key={idx} className={`ai-review-item ${selected.includes(idx) ? 'selected' : 'deselected'}`}>
-                        <input
-                            type="checkbox"
-                            checked={selected.includes(idx)}
-                            onChange={() => toggleItem(idx)}
-                        />
+                        <input type="checkbox" checked={selected.includes(idx)} onChange={() => toggleItem(idx)} />
                         <span className="ai-item-name">{item.name}</span>
                         <select
                             value={item.kategorie || 'vorrat'}
@@ -101,39 +112,46 @@ const AiItemsReview = ({ items, onConfirm, onCancel }) => {
             </div>
         </div>
     );
-};
+}
+
+const SCANNER_TABS = [
+    { id: 'barcode', label: 'Barcode', icon: '📊' },
+    { id: 'sprache', label: 'Sprache', icon: '🎤' },
+    { id: 'zettel',  label: 'Zettel',  icon: '📝' },
+];
 
 const ProdukteListe = () => {
     const { activeUserId } = useUser();
+
     const produkte = useLiveQuery(
         () => db.produkte.where('person_id').equals(activeUserId).toArray(),
         [activeUserId]
     );
 
-    // --- Form state ---
+    const einkaufItems = useLiveQuery(
+        () => db.einkaufsliste.where('person_id').equals(activeUserId).toArray(),
+        [activeUserId]
+    );
+
+    // Inventar-Formular
     const [name, setName] = useState('');
     const [kat, setKat] = useState('kuehlschrank');
     const [ablauf, setAblauf] = useState('');
-    const [produktFoto, setProduktFoto] = useState(null);
-    const [showAddForm, setShowAddForm] = useState(() => {
-        const autoAdd = sessionStorage.getItem('auto-add-product');
-        if (autoAdd) { sessionStorage.removeItem('auto-add-product'); return true; }
-        return false;
-    });
-    const [isLoading, setIsLoading] = useState(false);
-    const [scanMessage, setScanMessage] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
+    const [showAddForm, setShowAddForm] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [showScanner, setShowScanner] = useState(false);
+    const [scanMessage, setScanMessage] = useState('');
 
-    // --- Scanner state ---
+    // Produkt bearbeiten
+    const [editProduct, setEditProduct] = useState(null);
+    const [viewMode, setViewMode] = useState('grid');
+
+    // Scanner-Panel (Sprache / Zettel)
     const [scannerOpen, setScannerOpen] = useState(false);
     const [scannerTab, setScannerTab] = useState('barcode');
-    const [showBarcodeCamera, setShowBarcodeCamera] = useState(false);
-    const [aiItems, setAiItems] = useState([]);
-    const [aiLoading, setAiLoading] = useState(false);
-    const [aiError, setAiError] = useState('');
-    const [kassenInfo, setKassenInfo] = useState('');
 
-    // --- Voice state (Web Speech API) ---
+    // Voice-Eingabe (Web Speech API)
     const [listening, setListening] = useState(false);
     const [voiceTranscript, setVoiceTranscript] = useState('');
     const [voiceItems, setVoiceItems] = useState([]);
@@ -142,18 +160,37 @@ const ProdukteListe = () => {
     );
     const recognitionRef = useRef(null);
 
-    // --- OCR state (Tesseract.js) ---
+    // OCR-Eingabe (Tesseract.js)
     const [ocrLoading, setOcrLoading] = useState(false);
     const [ocrError, setOcrError] = useState('');
     const [ocrProgress, setOcrProgress] = useState(0);
     const [ocrItems, setOcrItems] = useState([]);
     const zettelInputRef = useRef(null);
 
-    // --- Category accordion state ---
-    const [expandedCategories, setExpandedCategories] = useState({});
-    const [showAllItems, setShowAllItems] = useState({});
+    // Einkaufsliste
+    const [einkaufName, setEinkaufName] = useState('');
+    const [einkaufOpen, setEinkaufOpen] = useState(true);
+    const [copySuccess, setCopySuccess] = useState(false);
 
-    const fotoInputRef = useRef(null);
+    const openEdit = (p) => setEditProduct({
+        id: p.id,
+        name: p.name,
+        kategorie: p.kategorie || p.ort || 'kuehlschrank',
+        ablauf: p.ablauf ? new Date(p.ablauf).toISOString().slice(0, 10) : ''
+    });
+
+    const saveEdit = async () => {
+        if (!editProduct || !editProduct.name.trim()) return;
+        await db.produkte.update(editProduct.id, {
+            name: editProduct.name.trim(),
+            kategorie: editProduct.kategorie,
+            ort: editProduct.kategorie,
+            ablauf: editProduct.ablauf
+                ? new Date(editProduct.ablauf).toISOString()
+                : new Date(Date.now() + 7 * 86400000).toISOString()
+        });
+        setEditProduct(null);
+    };
 
     const handleNameChange = (e) => {
         const value = e.target.value;
@@ -164,22 +201,18 @@ const ProdukteListe = () => {
         if (!name.trim()) return;
         setIsLoading(true);
         try {
-            const expiryDate = ablauf
-                ? new Date(ablauf).toISOString()
-                : new Date(Date.now() + 7 * 24 * 3600 * 1000).toISOString();
             await db.produkte.add({
                 id: Date.now().toString(),
                 person_id: activeUserId,
                 name: name.trim(),
                 kategorie: kat,
                 ort: kat,
-                ablauf: expiryDate,
-                foto: produktFoto || null
+                ablauf: ablauf
+                    ? new Date(ablauf).toISOString()
+                    : new Date(Date.now() + 7 * 24 * 3600 * 1000).toISOString()
             });
             setName('');
             setAblauf('');
-            setProduktFoto(null);
-            setShowAddForm(false);
         } catch (err) {
             console.error('Error adding product:', err);
         } finally {
@@ -187,10 +220,24 @@ const ProdukteListe = () => {
         }
     };
 
+    const addBulkItems = async (items) => {
+        for (const item of items) {
+            await db.produkte.add({
+                id: `bulk-${Date.now()}-${Math.random()}`,
+                person_id: activeUserId,
+                name: item.name,
+                kategorie: item.kategorie || 'vorrat',
+                ort: item.kategorie || 'vorrat',
+                ablauf: new Date(Date.now() + 7 * 24 * 3600 * 1000).toISOString()
+            });
+        }
+    };
+
     const handleDelete = async (product) => {
         const addToList = window.confirm(
-            `"${product.name}" löschen?\n\nOK = auch zur Einkaufsliste hinzufügen`
+            `"${product.name}" löschen?\n\nOK = auch zur Einkaufsliste hinzufügen\nAbbrechen = nur löschen`
         );
+        setIsLoading(true);
         try {
             await db.produkte.delete(product.id);
             if (addToList) {
@@ -198,151 +245,38 @@ const ProdukteListe = () => {
                     id: Date.now().toString(),
                     person_id: activeUserId,
                     name: product.name,
-                    checked: false
+                    checked: false,
+                    created_at: Date.now()
                 });
             }
         } catch (err) {
             console.error('Error deleting product:', err);
+        } finally {
+            setIsLoading(false);
         }
     };
 
     const handleScan = async (barcode) => {
-        setShowBarcodeCamera(false);
+        setShowScanner(false);
         setIsLoading(true);
         setScanMessage('Suche Produkt...');
         try {
             const result = await searchProduct(barcode);
             if (result.found) {
-                setScanMessage(`✓ Gefunden: ${result.name}`);
+                setScanMessage(`Gefunden: ${result.name}`);
                 setName(result.brand ? `${result.brand} ${result.name}` : result.name);
                 setKat(result.category);
-                setShowAddForm(true);
-                setScannerOpen(false);
+                setTimeout(() => setScanMessage(''), 3000);
             } else {
-                setScanMessage(`Barcode ${barcode} nicht gefunden. Bitte manuell eingeben.`);
-                setShowAddForm(true);
-                setScannerOpen(false);
+                setScanMessage(`Barcode ${barcode} nicht gefunden.`);
+                setTimeout(() => setScanMessage(''), 5000);
             }
         } catch (err) {
             setScanMessage('Fehler beim Suchen. Bitte manuell eingeben.');
-        } finally {
-            setIsLoading(false);
             setTimeout(() => setScanMessage(''), 5000);
-        }
-    };
-
-    const handleFotoKI = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        e.target.value = '';
-        if (!isKIConfigured()) {
-            setAiError('⚠️ Kein KI-API-Key konfiguriert. Bitte in den Einstellungen eingeben.');
-            return;
-        }
-        setAiLoading(true);
-        setAiError('');
-        setAiItems([]);
-        try {
-            const base64 = await compressImage(file);
-            const items = await analyzePhoto(base64);
-            if (!items || items.length === 0) {
-                setAiError('Keine Produkte erkannt. Bitte ein klareres Foto versuchen.');
-            } else {
-                setAiItems(items);
-            }
-        } catch (err) {
-            setAiError('Fehler: ' + err.message);
-        } finally {
-            setAiLoading(false);
-        }
-    };
-
-    const handleKassenbon = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        e.target.value = '';
-        if (!isKIConfigured()) {
-            setAiError('⚠️ Kein KI-API-Key konfiguriert. Bitte in den Einstellungen eingeben.');
-            return;
-        }
-        setAiLoading(true);
-        setAiError('');
-        setAiItems([]);
-        setKassenInfo('');
-        try {
-            const base64 = await compressImage(file);
-            const result = await analyzeReceipt(base64);
-            if (result.laden || result.datum) {
-                setKassenInfo(`${result.laden || ''}${result.datum ? ' · ' + result.datum : ''}`);
-            }
-            if (!result.items || result.items.length === 0) {
-                setAiError('Keine Produkte erkannt. Bitte ein klareres Foto versuchen.');
-            } else {
-                setAiItems(result.items);
-            }
-        } catch (err) {
-            setAiError('Fehler: ' + err.message);
-        } finally {
-            setAiLoading(false);
-        }
-    };
-
-    const addAiItems = async (selectedItems) => {
-        setIsLoading(true);
-        try {
-            for (const item of selectedItems) {
-                await db.produkte.add({
-                    id: `ai-${Date.now()}-${Math.random().toString(36).slice(2)}`,
-                    person_id: activeUserId,
-                    name: item.name,
-                    kategorie: item.kategorie || 'vorrat',
-                    ort: item.kategorie || 'vorrat',
-                    ablauf: item.ablaufTage
-                        ? new Date(Date.now() + item.ablaufTage * 24 * 3600 * 1000).toISOString()
-                        : new Date(Date.now() + 7 * 24 * 3600 * 1000).toISOString(),
-                    foto: null
-                });
-            }
-            setAiItems([]);
-            setKassenInfo('');
-        } catch (err) {
-            console.error('Error adding AI items:', err);
         } finally {
             setIsLoading(false);
         }
-    };
-
-    const handleProduktFoto = (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (ev) => setProduktFoto(ev.target.result);
-        reader.readAsDataURL(file);
-    };
-
-    const toggleCategory = (catId) => {
-        setExpandedCategories(prev => ({ ...prev, [catId]: !prev[catId] }));
-    };
-
-    const toggleShowAll = (catId) => {
-        setShowAllItems(prev => ({ ...prev, [catId]: !prev[catId] }));
-    };
-
-    const closeScannerTab = (tabId) => {
-        setScannerTab(tabId);
-        setAiItems([]);
-        setAiError('');
-        setKassenInfo('');
-        setShowBarcodeCamera(false);
-        // reset voice
-        recognitionRef.current?.abort();
-        setListening(false);
-        setVoiceTranscript('');
-        setVoiceItems([]);
-        // reset OCR
-        setOcrItems([]);
-        setOcrError('');
-        setOcrProgress(0);
     };
 
     // ── Voice (Web Speech API) ────────────────────────────────────────────────
@@ -366,10 +300,7 @@ const ProdukteListe = () => {
                     .split(/[,;]|\s+und\s+|\s+oder\s+/i)
                     .map(s => s.trim())
                     .filter(s => s.length > 1)
-                    .map(name => ({
-                        name: name.charAt(0).toUpperCase() + name.slice(1),
-                        kategorie: guessCategory(name)
-                    }));
+                    .map(n => ({ name: n.charAt(0).toUpperCase() + n.slice(1), kategorie: guessCategory(n) }));
                 setVoiceItems(items);
             }
             setVoiceTranscript('');
@@ -398,9 +329,7 @@ const ProdukteListe = () => {
             const { createWorker } = await import('tesseract.js');
             const worker = await createWorker('deu', 1, {
                 logger: m => {
-                    if (m.status === 'recognizing text') {
-                        setOcrProgress(Math.round(m.progress * 100));
-                    }
+                    if (m.status === 'recognizing text') setOcrProgress(Math.round(m.progress * 100));
                 }
             });
             const { data: { text } } = await worker.recognize(file);
@@ -410,13 +339,13 @@ const ProdukteListe = () => {
                 .split('\n')
                 .map(line => line.replace(/^[\s\-•*·\d.)]+/, '').trim())
                 .filter(line => line.length > 2 && !/^\d+$/.test(line))
-                .map(name => ({
-                    name: name.charAt(0).toUpperCase() + name.slice(1).toLowerCase(),
-                    kategorie: guessCategory(name)
+                .map(n => ({
+                    name: n.charAt(0).toUpperCase() + n.slice(1).toLowerCase(),
+                    kategorie: guessCategory(n)
                 }));
 
             if (items.length === 0) {
-                setOcrError('Kein Text erkannt. Bitte Blatt gerade halten und gut beleuchten.');
+                setOcrError('Kein Text erkannt. Blatt gerade halten und gut beleuchten.');
             } else {
                 setOcrItems(items);
             }
@@ -427,19 +356,58 @@ const ProdukteListe = () => {
         }
     };
 
-    // Products expiring within 3 days
-    const expiringProducts = useMemo(() => {
-        if (!produkte) return [];
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const threeDays = new Date(today);
-        threeDays.setDate(threeDays.getDate() + 3);
-        return produkte
-            .filter(p => p.ablauf && new Date(p.ablauf) <= threeDays)
-            .sort((a, b) => new Date(a.ablauf) - new Date(b.ablauf));
-    }, [produkte]);
+    const closeScannerTab = (tabId) => {
+        setScannerTab(tabId);
+        recognitionRef.current?.abort();
+        setListening(false); setVoiceTranscript(''); setVoiceItems([]);
+        setOcrItems([]); setOcrError(''); setOcrProgress(0);
+    };
 
-    // Group products by category, filtered by search
+    // ── Einkaufsliste ──────────────────────────────
+    const addEinkaufItem = async () => {
+        const val = einkaufName.trim();
+        if (!val) return;
+        await db.einkaufsliste.add({
+            id: Date.now().toString(),
+            person_id: activeUserId,
+            name: val,
+            checked: false,
+            created_at: Date.now()
+        });
+        setEinkaufName('');
+    };
+
+    const toggleEinkaufItem = (item) => db.einkaufsliste.update(item.id, { checked: !item.checked });
+    const deleteEinkaufItem = (id) => db.einkaufsliste.delete(id);
+
+    const clearCheckedEinkauf = async () => {
+        const checked = (einkaufItems || []).filter(i => i.checked);
+        for (const item of checked) await db.einkaufsliste.delete(item.id);
+    };
+
+    const uncheckedEinkauf = (einkaufItems || []).filter(i => !i.checked);
+    const checkedEinkauf   = (einkaufItems || []).filter(i =>  i.checked);
+
+    const buildListText = () => {
+        const header = '🛒 Einkaufsliste\n';
+        const items = uncheckedEinkauf.map(i => `• ${i.name}`).join('\n');
+        return header + (items || '(leer)');
+    };
+
+    const shareViaWhatsApp = () => {
+        const text = encodeURIComponent(buildListText());
+        window.open(`https://wa.me/?text=${text}`, '_blank');
+    };
+
+    const copyToClipboard = async () => {
+        try {
+            await navigator.clipboard.writeText(buildListText());
+            setCopySuccess(true);
+            setTimeout(() => setCopySuccess(false), 2000);
+        } catch { /* fallback */ }
+    };
+
+    // ── Kategorien ─────────────────────────────────
     const categorizedProducts = useMemo(() => {
         if (!produkte) return {};
         const query = searchQuery.toLowerCase().trim();
@@ -449,43 +417,91 @@ const ProdukteListe = () => {
 
         const grouped = {};
         for (const cat of DEFAULT_CATEGORIES) {
-            grouped[cat.id] = filtered
+            const items = filtered
                 .filter(p => p.kategorie === cat.id || p.ort === cat.id)
-                .sort((a, b) => new Date(a.ablauf) - new Date(b.ablauf));
+                .sort((a, b) => {
+                    const pA = getProductPriority(a.name);
+                    const pB = getProductPriority(b.name);
+                    if (pA !== pB) return pA - pB;
+                    return new Date(a.ablauf) - new Date(b.ablauf);
+                });
+            if (items.length > 0 || query) grouped[cat.id] = items;
         }
         return grouped;
     }, [produkte, searchQuery]);
 
-    // Auto-expand categories with search results
-    useMemo(() => {
-        if (searchQuery.trim()) {
-            const expanded = {};
-            for (const [catId, items] of Object.entries(categorizedProducts)) {
-                if (items.length > 0) expanded[catId] = true;
-            }
-            setExpandedCategories(expanded);
-        }
-    }, [searchQuery]);
+    const urgentProducts = useMemo(() => {
+        if (!produkte) return [];
+        const now = new Date(); now.setHours(0, 0, 0, 0);
+        return produkte
+            .filter(p => Math.round((new Date(p.ablauf) - now) / 86400000) <= 3)
+            .sort((a, b) => new Date(a.ablauf) - new Date(b.ablauf));
+    }, [produkte]);
+
+    const allSortedByExpiry = useMemo(() => {
+        if (!produkte) return [];
+        const query = searchQuery.toLowerCase().trim();
+        const filtered = query ? produkte.filter(p => p.name.toLowerCase().includes(query)) : produkte;
+        return filtered.slice().sort((a, b) => new Date(a.ablauf) - new Date(b.ablauf));
+    }, [produkte, searchQuery]);
 
     const totalProducts = produkte ? produkte.length : 0;
     const isSearchActive = searchQuery.trim().length > 0;
+    const einkaufTotal = (einkaufItems || []).length;
 
     return (
         <div className="page produkte-page">
+            {/* Header */}
             <div className="produkte-header">
                 <h2>Inventar</h2>
-                <div className="produkte-header-right">
-                    <span className="produkte-count">{totalProducts}</span>
+                <span className="produkte-count">{totalProducts}</span>
+                <div className="view-toggle">
                     <button
-                        className={`scanner-toggle-btn ${scannerOpen ? 'active' : ''}`}
-                        onClick={() => setScannerOpen(!scannerOpen)}
-                    >
-                        {scannerOpen ? '✕ Schliessen' : '📷 Scannen'}
-                    </button>
+                        className={`view-btn ${viewMode === 'grid' ? 'active' : ''}`}
+                        onClick={() => setViewMode('grid')}
+                        title="Kacheln"
+                    >⊞</button>
+                    <button
+                        className={`view-btn ${viewMode === 'list' ? 'active' : ''}`}
+                        onClick={() => setViewMode('list')}
+                        title="Liste"
+                    >☰</button>
                 </div>
             </div>
 
-            {/* ── Scanner Panel ─────────────────────────────────────────────── */}
+            {/* Search */}
+            <div className="produkte-search">
+                <span className="search-icon">🔍</span>
+                <input
+                    type="text"
+                    placeholder="Produkt suchen..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="search-input"
+                />
+                {searchQuery && (
+                    <button className="search-clear" onClick={() => setSearchQuery('')}>×</button>
+                )}
+            </div>
+
+            {/* ── Scanner-Panel (Sprache / Zettel / Barcode) ──────────────── */}
+            <div className="scanner-panel-row">
+                <button
+                    className="btn-add-toggle"
+                    onClick={() => setShowAddForm(!showAddForm)}
+                    style={{ flex: 1 }}
+                >
+                    {showAddForm ? '✕ Schliessen' : '+ Produkt hinzufügen'}
+                </button>
+                <button
+                    className={`scanner-extra-btn${scannerOpen ? ' active' : ''}`}
+                    onClick={() => setScannerOpen(o => !o)}
+                    title="Ohne Tippen hinzufügen"
+                >
+                    🎤📝
+                </button>
+            </div>
+
             {scannerOpen && (
                 <div className="scanner-panel card">
                     <div className="scanner-tabs">
@@ -504,114 +520,37 @@ const ProdukteListe = () => {
                     {scannerTab === 'barcode' && (
                         <div className="scanner-content">
                             <p className="scanner-hint">Starte die Kamera und halte den Barcode drauf.</p>
-                            {showBarcodeCamera ? (
-                                <BarcodeScanner
-                                    onScan={handleScan}
-                                    onClose={() => setShowBarcodeCamera(false)}
-                                />
+                            {showScanner ? (
+                                <BarcodeScanner onScan={handleScan} onClose={() => setShowScanner(false)} />
                             ) : (
-                                <button
-                                    className="btn primary scan-start-btn"
-                                    onClick={() => setShowBarcodeCamera(true)}
-                                >
+                                <button className="btn primary scan-start-btn" onClick={() => setShowScanner(true)}>
                                     📷 Kamera starten
                                 </button>
                             )}
                         </div>
                     )}
 
-                    {/* Foto-KI Tab */}
-                    {scannerTab === 'foto' && (
-                        <div className="scanner-content">
-                            <p className="scanner-hint">
-                                Fotografiere deinen Kühlschrank oder Vorrat — die KI erkennt alle Produkte automatisch.
-                            </p>
-                            {!isKIConfigured() && (
-                                <div className="scanner-ki-warning">
-                                    ⚠️ Kein KI-API-Key konfiguriert. Bitte in den <strong>Einstellungen</strong> eingeben.
-                                </div>
-                            )}
-                            <label className="btn secondary scan-file-label">
-                                📸 Foto wählen (Kamera oder Galerie)
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleFotoKI}
-                                    style={{ display: 'none' }}
-                                />
-                            </label>
-                            {aiLoading && <p className="scan-loading">⏳ KI analysiert Bild...</p>}
-                            {aiError && <p className="scan-error">{aiError}</p>}
-                            {aiItems.length > 0 && (
-                                <AiItemsReview
-                                    items={aiItems}
-                                    onConfirm={addAiItems}
-                                    onCancel={() => setAiItems([])}
-                                />
-                            )}
-                        </div>
-                    )}
-
-                    {/* Kassenbon Tab */}
-                    {scannerTab === 'kassenbon' && (
-                        <div className="scanner-content">
-                            <p className="scanner-hint">
-                                Fotografiere deinen Kassenbon — die KI liest alle Lebensmittel aus.
-                            </p>
-                            {kassenInfo && (
-                                <p className="kassen-info">🏪 {kassenInfo}</p>
-                            )}
-                            {!isKIConfigured() && (
-                                <div className="scanner-ki-warning">
-                                    ⚠️ Kein KI-API-Key konfiguriert. Bitte in den <strong>Einstellungen</strong> eingeben.
-                                </div>
-                            )}
-                            <label className="btn secondary scan-file-label">
-                                🧾 Kassenbon wählen (Kamera oder Galerie)
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleKassenbon}
-                                    style={{ display: 'none' }}
-                                />
-                            </label>
-                            {aiLoading && <p className="scan-loading">⏳ KI analysiert Kassenbon...</p>}
-                            {aiError && <p className="scan-error">{aiError}</p>}
-                            {aiItems.length > 0 && (
-                                <AiItemsReview
-                                    items={aiItems}
-                                    onConfirm={addAiItems}
-                                    onCancel={() => setAiItems([])}
-                                />
-                            )}
-                        </div>
-                    )}
-
-                    {/* Sprache Tab – Web Speech API, kein API-Key */}
+                    {/* Sprache Tab – Web Speech API */}
                     {scannerTab === 'sprache' && (
                         <div className="scanner-content">
                             <div className="scanner-nokey-badge">✅ Kein API-Key nötig</div>
                             <p className="scanner-hint">
-                                Sprich die Produktnamen aus — getrennt durch Komma oder "und".
-                                Funktioniert komplett ohne Internet-Dienste.
+                                Sprich Produktnamen aus — getrennt durch Komma oder "und". Funktioniert ohne Internet.
                             </p>
                             {!voiceSupported ? (
                                 <div className="scanner-ki-warning">
-                                    ⚠️ Spracherkennung wird von deinem Browser nicht unterstützt.
-                                    Bitte Chrome, Edge oder Safari verwenden.
+                                    ⚠️ Spracherkennung nicht unterstützt. Bitte Chrome, Edge oder Safari verwenden.
                                 </div>
                             ) : voiceItems.length > 0 ? (
-                                <AiItemsReview
+                                <ItemsReview
                                     items={voiceItems}
-                                    onConfirm={(items) => { addAiItems(items); setVoiceItems([]); }}
+                                    onConfirm={async (items) => { await addBulkItems(items); setVoiceItems([]); setScannerOpen(false); }}
                                     onCancel={() => setVoiceItems([])}
                                 />
                             ) : (
                                 <>
                                     {voiceTranscript && (
-                                        <div className="voice-transcript">
-                                            🎙️ <em>{voiceTranscript}</em>
-                                        </div>
+                                        <div className="voice-transcript">🎙️ <em>{voiceTranscript}</em></div>
                                     )}
                                     <button
                                         className={`btn ${listening ? 'danger' : 'primary'} scan-start-btn`}
@@ -619,9 +558,7 @@ const ProdukteListe = () => {
                                     >
                                         {listening ? '⏹ Aufnahme stoppen' : '🎤 Aufnahme starten'}
                                     </button>
-                                    {listening && (
-                                        <p className="scan-loading">🔴 Höre zu... Sprich jetzt!</p>
-                                    )}
+                                    {listening && <p className="scan-loading">🔴 Höre zu... Sprich jetzt!</p>}
                                     <p className="scanner-hint" style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
                                         Beispiel: "Milch, Joghurt und Butter"
                                     </p>
@@ -630,7 +567,7 @@ const ProdukteListe = () => {
                         </div>
                     )}
 
-                    {/* Zettel Tab – Tesseract.js OCR, kein API-Key */}
+                    {/* Zettel Tab – Tesseract.js OCR */}
                     {scannerTab === 'zettel' && (
                         <div className="scanner-content">
                             <input
@@ -641,15 +578,14 @@ const ProdukteListe = () => {
                                 onChange={handleZettelSelected}
                                 style={{ display: 'none' }}
                             />
-                            <div className="scanner-nokey-badge">✅ Kein API-Key nötig · Läuft lokal</div>
+                            <div className="scanner-nokey-badge">✅ Kein API-Key · Läuft lokal auf deinem Gerät</div>
                             <p className="scanner-hint">
-                                Halte eine Einkaufsliste oder ein beschriftetes Blatt in die Kamera —
-                                der Text wird direkt auf deinem Gerät erkannt.
+                                Halte eine Einkaufsliste oder ein Blatt Papier in die Kamera — der Text wird lokal erkannt.
                             </p>
                             {ocrItems.length > 0 ? (
-                                <AiItemsReview
+                                <ItemsReview
                                     items={ocrItems}
-                                    onConfirm={(items) => { addAiItems(items); setOcrItems([]); }}
+                                    onConfirm={async (items) => { await addBulkItems(items); setOcrItems([]); setScannerOpen(false); }}
                                     onCancel={() => setOcrItems([])}
                                 />
                             ) : ocrLoading ? (
@@ -660,7 +596,7 @@ const ProdukteListe = () => {
                                         <div className="ocr-progress-fill" style={{ width: `${ocrProgress}%` }} />
                                     </div>
                                     <p className="scanner-hint" style={{ fontSize: '0.78rem' }}>
-                                        Beim ersten Mal wird die Sprachpaketdatei heruntergeladen (~10 MB).
+                                        Beim ersten Mal wird das Sprachpaket heruntergeladen (~10 MB).
                                     </p>
                                 </div>
                             ) : (
@@ -673,7 +609,7 @@ const ProdukteListe = () => {
                                         📷 Zettel fotografieren
                                     </button>
                                     <p className="scanner-hint" style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                                        Tipp: Jede Zeile = ein Produkt. Gedruckte Schrift wird besser erkannt als Handschrift. Gut beleuchten!
+                                        Tipp: Jede Zeile = ein Produkt. Gedruckte Schrift wird besser erkannt. Gut beleuchten!
                                     </p>
                                 </>
                             )}
@@ -682,30 +618,7 @@ const ProdukteListe = () => {
                 </div>
             )}
 
-            {/* ── Add Product Toggle ────────────────────────────────────── */}
-            <button
-                className="btn-add-toggle"
-                onClick={() => setShowAddForm(!showAddForm)}
-            >
-                {showAddForm ? '✕ Schliessen' : '+ Produkt hinzufügen'}
-            </button>
-
-            {/* ── Search ──────────────────────────────────────────────────── */}
-            <div className="produkte-search">
-                <span className="search-icon">🔍</span>
-                <input
-                    type="text"
-                    placeholder="Inventar durchsuchen..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="search-input search-input-with-icon"
-                />
-                {searchQuery && (
-                    <button className="search-clear" onClick={() => setSearchQuery('')}>✕</button>
-                )}
-            </div>
-
-            {/* ── Add Product Form ──────────────────────────────────────── */}
+            {/* Add Product Form */}
             {showAddForm && (
                 <div className="card add-form">
                     {scanMessage && <div className="scan-message">{scanMessage}</div>}
@@ -716,6 +629,7 @@ const ProdukteListe = () => {
                             value={name}
                             onChange={handleNameChange}
                             className="form-input"
+                            onKeyDown={e => e.key === 'Enter' && addProdukt()}
                         />
                     </div>
                     <div className="form-group">
@@ -726,179 +640,283 @@ const ProdukteListe = () => {
                         </select>
                     </div>
                     <div className="form-group">
-                        <label className="form-label">Ablaufdatum (optional, Standard: +7 Tage)</label>
+                        <label htmlFor="ablauf-input" className="form-label">
+                            Ablaufdatum (optional, Standard: +7 Tage)
+                        </label>
                         <input
+                            id="ablauf-input"
                             type="date"
                             value={ablauf}
                             onChange={(e) => setAblauf(e.target.value)}
                             className="form-input"
                         />
                     </div>
-                    <div className="form-group">
-                        <label className="form-label">Produktfoto (optional)</label>
-                        <div className="foto-upload-row">
-                            {produktFoto && (
-                                <img src={produktFoto} alt="Vorschau" className="foto-preview" />
-                            )}
-                            <label className="btn secondary small foto-upload-btn">
-                                {produktFoto ? '🔄 Ändern' : '📷 Foto hinzufügen'}
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleProduktFoto}
-                                    style={{ display: 'none' }}
-                                    ref={fotoInputRef}
-                                />
-                            </label>
-                            {produktFoto && (
-                                <button
-                                    className="btn small secondary"
-                                    onClick={() => setProduktFoto(null)}
-                                >
-                                    🗑️
-                                </button>
-                            )}
-                        </div>
-                    </div>
                     <div className="button-group">
+                        <button
+                            onClick={() => setShowScanner(true)}
+                            className="btn secondary"
+                            disabled={isLoading}
+                        >
+                            📷 Barcode
+                        </button>
                         <button
                             onClick={addProdukt}
                             className="btn primary"
                             disabled={isLoading || !name.trim()}
                         >
-                            {isLoading ? '...' : '+ Hinzufügen'}
+                            {isLoading ? strings.common.loading : strings.products.add}
                         </button>
                     </div>
                 </div>
             )}
 
-            {/* ── Expiring Soon Section ──────────────────────────────────── */}
-            {expiringProducts.length > 0 && !isSearchActive && (
-                <div className="expiring-section">
-                    <h3 className="expiring-section-title">⚠️ Läuft bald ab</h3>
-                    <div className="kategorie-scroll">
-                        {expiringProducts.map(p => {
-                            const expiry = getExpiryText(p.ablauf);
+            {/* Barcode Scanner (from Add Form button) */}
+            {showScanner && (
+                <BarcodeScanner onScan={handleScan} onClose={() => setShowScanner(false)} />
+            )}
+
+            {/* ⚠️ Bald ablaufend */}
+            {urgentProducts.length > 0 && !isSearchActive && (
+                <div className="urgent-section">
+                    <div className="urgent-header">
+                        <span>⚠️ Bald ablaufend</span>
+                        <span className="urgent-count">{urgentProducts.length}</span>
+                    </div>
+                    {urgentProducts.map(p => {
+                        const cat = DEFAULT_CATEGORIES.find(c => c.id === (p.kategorie || p.ort));
+                        const expiry = getExpiryText(p.ablauf);
+                        return (
+                            <div key={p.id} className="urgent-item" onClick={() => openEdit(p)}>
+                                <span className="urgent-item-icon">{cat?.icon ?? '📦'}</span>
+                                <span className="urgent-item-name">{p.name}</span>
+                                <span className={`urgent-item-expiry ${expiry.className}`}>{expiry.text}</span>
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
+
+            {/* Produkte – Liste oder Kacheln */}
+            {viewMode === 'list' ? (
+                <div className="produkt-list">
+                    {totalProducts === 0 && !showAddForm && (
+                        <div className="empty-state">
+                            <p>{strings.products.noProducts}</p>
+                            <button className="btn primary" onClick={() => setShowAddForm(true)}>+ Erstes Produkt hinzufügen</button>
+                        </div>
+                    )}
+                    {isSearchActive && allSortedByExpiry.length === 0 && totalProducts > 0 && (
+                        <div className="empty-state"><p>Keine Produkte für „{searchQuery}"</p></div>
+                    )}
+                    {allSortedByExpiry.map(p => {
+                        const cat = DEFAULT_CATEGORIES.find(c => c.id === (p.kategorie || p.ort));
+                        const expiry = getExpiryText(p.ablauf);
+                        return (
+                            <div key={p.id} className="produkt-list-item" onClick={() => openEdit(p)}>
+                                <span className="produkt-list-icon">{cat?.icon ?? '📦'}</span>
+                                <div className="produkt-list-info">
+                                    <span className="produkt-list-name">{p.name}</span>
+                                    <span className="produkt-list-cat">{cat?.name}</span>
+                                </div>
+                                <span className={`produkt-list-expiry ${expiry.className}`}>{expiry.text}</span>
+                                <button
+                                    className="produkt-card-delete"
+                                    onClick={(e) => { e.stopPropagation(); handleDelete(p); }}
+                                    title="Löschen"
+                                >×</button>
+                            </div>
+                        );
+                    })}
+                </div>
+            ) : (
+                <>
+                    <div className="kategorie-sections">
+                        {DEFAULT_CATEGORIES.map(cat => {
+                            const items = categorizedProducts[cat.id];
+                            if (!items || (items.length === 0 && !isSearchActive)) return null;
+                            const rgb = hexToRgb(cat.color);
                             return (
                                 <div
-                                    key={p.id}
-                                    className="produkt-card expiring-card"
-                                    style={{ borderLeftColor: '#E87E3B' }}
+                                    key={cat.id}
+                                    className="kategorie-section"
+                                    style={{ borderLeftColor: cat.color, background: `rgba(${rgb}, 0.04)` }}
                                 >
-                                    <div className="produkt-card-icon">
-                                        {p.foto
-                                            ? <img src={p.foto} alt={p.name} className="produkt-foto" />
-                                            : <ProductIcon productName={p.name} size="small" />
-                                        }
+                                    <div className="kategorie-header">
+                                        <span className="kategorie-icon" style={{ color: cat.color }}>{cat.icon}</span>
+                                        <span className="kategorie-name" style={{ color: cat.color }}>{cat.name}</span>
+                                        <span className="kategorie-badge" style={{ background: cat.color }}>{items.length}</span>
                                     </div>
-                                    <div className="produkt-card-info">
-                                        <span className="produkt-card-name">{p.name}</span>
-                                        <span className={`produkt-card-expiry ${expiry.className}`}>
-                                            {expiry.text}
-                                        </span>
-                                    </div>
-                                    <button
-                                        className="produkt-card-delete"
-                                        onClick={() => handleDelete(p)}
-                                        title="Löschen"
-                                    >✕</button>
+                                    {items.length === 0 ? (
+                                        <p className="kategorie-empty">Keine Produkte</p>
+                                    ) : (
+                                        <div className="kategorie-scroll">
+                                            {items.map(p => {
+                                                const expiry = getExpiryText(p.ablauf);
+                                                return (
+                                                    <div
+                                                        key={p.id}
+                                                        className="produkt-card"
+                                                        style={{ borderTopColor: cat.color }}
+                                                        onClick={() => openEdit(p)}
+                                                    >
+                                                        <button
+                                                            className="produkt-card-delete"
+                                                            onClick={(e) => { e.stopPropagation(); handleDelete(p); }}
+                                                            disabled={isLoading}
+                                                            title="Löschen"
+                                                        >×</button>
+                                                        <div className="produkt-card-icon">
+                                                            <ProductIcon productName={p.name} size="medium" />
+                                                        </div>
+                                                        <div className="produkt-card-info">
+                                                            <span className="produkt-card-name">{p.name}</span>
+                                                            <span className={`produkt-card-expiry ${expiry.className}`}>{expiry.text}</span>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
                                 </div>
                             );
                         })}
                     </div>
-                </div>
+
+                    {totalProducts === 0 && !showAddForm && (
+                        <div className="empty-state">
+                            <p>{strings.products.noProducts}</p>
+                            <button className="btn primary" onClick={() => setShowAddForm(true)}>
+                                + Erstes Produkt hinzufügen
+                            </button>
+                        </div>
+                    )}
+                    {isSearchActive && Object.values(categorizedProducts).every(arr => arr.length === 0) && totalProducts > 0 && (
+                        <div className="empty-state">
+                            <p>Keine Produkte gefunden für „{searchQuery}"</p>
+                        </div>
+                    )}
+                </>
             )}
 
-            {/* ── Category Accordion Sections ────────────────────────────── */}
-            <div className="kategorie-sections">
-                {DEFAULT_CATEGORIES.map(cat => {
-                    const items = categorizedProducts[cat.id] || [];
-                    if (items.length === 0 && !isSearchActive) return null;
-                    const isExpanded = expandedCategories[cat.id] || false;
-                    const showAll = showAllItems[cat.id] || false;
-                    const displayItems = showAll ? items : items.slice(0, MAX_ITEMS_PER_CAT);
-                    const hasMore = items.length > MAX_ITEMS_PER_CAT && !showAll;
+            {/* ── Einkaufsliste (integriert) ────────────── */}
+            <div className="inventar-einkauf-section">
+                <button
+                    className="inventar-einkauf-header"
+                    onClick={() => setEinkaufOpen(o => !o)}
+                    type="button"
+                >
+                    <span className="inventar-einkauf-title">
+                        🛒 Einkaufsliste
+                        {einkaufTotal > 0 && (
+                            <span className="einkauf-count-badge">{uncheckedEinkauf.length}</span>
+                        )}
+                    </span>
+                    <span className={`einkauf-chevron ${einkaufOpen ? 'open' : ''}`}>▼</span>
+                </button>
 
-                    return (
-                        <div key={cat.id} className="kategorie-section">
-                            <button
-                                className="kategorie-header kategorie-accordion"
-                                onClick={() => toggleCategory(cat.id)}
-                            >
-                                <span className="kategorie-icon">{cat.icon}</span>
-                                <span className="kategorie-name">{cat.name}</span>
-                                <span
-                                    className="kategorie-badge"
-                                    style={{ backgroundColor: cat.color }}
-                                >
-                                    {items.length}
-                                </span>
-                                <span className="kategorie-arrow">{isExpanded ? '▲' : '▼'}</span>
-                            </button>
-
-                            {isExpanded && (
-                                items.length === 0 ? (
-                                    <p className="kategorie-empty">Keine Produkte</p>
-                                ) : (
-                                    <div className="kategorie-scroll">
-                                        {displayItems.map(p => {
-                                            const expiry = getExpiryText(p.ablauf);
-                                            return (
-                                                <div
-                                                    key={p.id}
-                                                    className="produkt-card"
-                                                    style={{ borderLeftColor: cat.color }}
-                                                >
-                                                    <div className="produkt-card-icon">
-                                                        {p.foto
-                                                            ? <img src={p.foto} alt={p.name} className="produkt-foto" />
-                                                            : <ProductIcon productName={p.name} size="small" />
-                                                        }
-                                                    </div>
-                                                    <div className="produkt-card-info">
-                                                        <span className="produkt-card-name">{p.name}</span>
-                                                        <span className={`produkt-card-expiry ${expiry.className}`}>
-                                                            {expiry.text}
-                                                        </span>
-                                                    </div>
-                                                    <button
-                                                        className="produkt-card-delete"
-                                                        onClick={() => handleDelete(p)}
-                                                        title="Löschen"
-                                                    >✕</button>
-                                                </div>
-                                            );
-                                        })}
-                                        {hasMore && (
-                                            <div
-                                                className="produkt-card produkt-card-more"
-                                                onClick={() => toggleShowAll(cat.id)}
-                                            >
-                                                <span className="more-count">+{items.length - MAX_ITEMS_PER_CAT}</span>
-                                                <span className="more-label">mehr</span>
-                                            </div>
-                                        )}
-                                    </div>
-                                )
-                            )}
+                {einkaufOpen && (
+                    <div className="inventar-einkauf-body">
+                        <div className="einkauf-input-row">
+                            <input
+                                type="text"
+                                placeholder="Was fehlt?..."
+                                value={einkaufName}
+                                onChange={e => setEinkaufName(e.target.value)}
+                                onKeyDown={e => e.key === 'Enter' && addEinkaufItem()}
+                                className="einkauf-input"
+                            />
+                            <button onClick={addEinkaufItem} className="einkauf-add-btn">+</button>
                         </div>
-                    );
-                })}
+
+                        {uncheckedEinkauf.length === 0 && checkedEinkauf.length === 0 && (
+                            <p className="einkauf-empty">Liste ist leer – füge etwas hinzu!</p>
+                        )}
+
+                        <div className="einkauf-list">
+                            {uncheckedEinkauf.map(item => (
+                                <div key={item.id} className="einkauf-item">
+                                    <button className="einkauf-check" onClick={() => toggleEinkaufItem(item)}>
+                                        <span className="check-circle"></span>
+                                    </button>
+                                    <span className="einkauf-name">{item.name}</span>
+                                    <button className="einkauf-delete" onClick={() => deleteEinkaufItem(item.id)}>×</button>
+                                </div>
+                            ))}
+                        </div>
+
+                        {checkedEinkauf.length > 0 && (
+                            <div className="einkauf-checked-section">
+                                <div className="checked-header">
+                                    <span className="checked-title">Erledigt ({checkedEinkauf.length})</span>
+                                    <button className="btn small secondary" onClick={clearCheckedEinkauf}>Entfernen</button>
+                                </div>
+                                <div className="einkauf-list">
+                                    {checkedEinkauf.map(item => (
+                                        <div key={item.id} className="einkauf-item checked">
+                                            <button className="einkauf-check" onClick={() => toggleEinkaufItem(item)}>
+                                                <span className="check-circle checked"></span>
+                                            </button>
+                                            <span className="einkauf-name">{item.name}</span>
+                                            <button className="einkauf-delete" onClick={() => deleteEinkaufItem(item.id)}>×</button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {uncheckedEinkauf.length > 0 && (
+                            <div className="einkauf-share-row">
+                                <button className="einkauf-share-btn copy-btn" onClick={copyToClipboard}>
+                                    {copySuccess ? '✓ Kopiert!' : '📋 Kopieren'}
+                                </button>
+                                <button className="einkauf-share-btn whatsapp-btn" onClick={shareViaWhatsApp}>
+                                    📲 WhatsApp
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
 
-            {/* ── Empty State ────────────────────────────────────────────── */}
-            {totalProducts === 0 && !showAddForm && (
-                <div className="empty-state">
-                    <p>{strings.products.noProducts}</p>
-                    <button className="btn primary" onClick={() => setShowAddForm(true)}>
-                        + Erstes Produkt hinzufügen
-                    </button>
-                </div>
-            )}
-
-            {isSearchActive && Object.values(categorizedProducts).every(arr => arr.length === 0) && totalProducts > 0 && (
-                <div className="empty-state">
-                    <p>Keine Produkte gefunden für "{searchQuery}"</p>
+            {/* Produkt bearbeiten Modal */}
+            {editProduct && (
+                <div className="inv-modal-overlay" onClick={() => setEditProduct(null)}>
+                    <div className="inv-modal" onClick={e => e.stopPropagation()}>
+                        <h3>✏️ Produkt bearbeiten</h3>
+                        <div className="form-group" style={{ marginTop: 12 }}>
+                            <label>Name</label>
+                            <input
+                                type="text"
+                                value={editProduct.name}
+                                onChange={e => setEditProduct(s => ({ ...s, name: e.target.value }))}
+                                onKeyDown={e => e.key === 'Enter' && saveEdit()}
+                                autoFocus
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Kategorie</label>
+                            <select
+                                value={editProduct.kategorie}
+                                onChange={e => setEditProduct(s => ({ ...s, kategorie: e.target.value }))}
+                            >
+                                {DEFAULT_CATEGORIES.map(c => (
+                                    <option key={c.id} value={c.id}>{c.icon} {c.name}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="form-group">
+                            <label>Ablaufdatum</label>
+                            <input
+                                type="date"
+                                value={editProduct.ablauf}
+                                onChange={e => setEditProduct(s => ({ ...s, ablauf: e.target.value }))}
+                            />
+                        </div>
+                        <div className="inv-modal-actions">
+                            <button className="btn secondary" onClick={() => setEditProduct(null)}>Abbrechen</button>
+                            <button className="btn primary" onClick={saveEdit}>✓ Speichern</button>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

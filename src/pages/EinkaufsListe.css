@@ -160,9 +160,28 @@
     letter-spacing: 0.5px;
 }
 
-/* Mobile: always show delete button */
-@media (max-width: 768px) {
-    .einkauf-delete {
-        opacity: 0.4;
-    }
+/* Inventar-Button auf checked items */
+.einkauf-inv-btn {
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: var(--radius-sm);
+    opacity: 0;
+    transition: opacity 0.2s, background 0.2s;
+    line-height: 1;
+    flex-shrink: 0;
 }
+
+.einkauf-item:hover .einkauf-inv-btn,
+.einkauf-item:focus-within .einkauf-inv-btn { opacity: 1; }
+.einkauf-inv-btn:hover { background: var(--primary-light); }
+
+/* Mobile: always visible */
+@media (max-width: 768px) {
+    .einkauf-delete { opacity: 0.4; }
+    .einkauf-inv-btn { opacity: 0.6; }
+}
+
+/* ── Ins-Inventar-Modal (Styles in index.css) ────── */

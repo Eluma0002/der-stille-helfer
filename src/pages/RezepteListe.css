@@ -1,19 +1,63 @@
-/* Rezepte Page */
+/* ── Rezepte Page ───────────────────────────────── */
 .rezepte-page {
     animation: fadeIn 0.3s ease-out;
 }
 
-/* Search */
-.rezepte-search {
+/* ── Quelle-Tabs ────────────────────────────────── */
+.source-tabs {
+    display: flex;
+    gap: 8px;
     margin-bottom: 16px;
 }
 
-.search-input {
-    width: 100%;
-    padding: 14px 18px;
+.source-tab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 14px;
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
-    font-size: 1rem;
+    background: var(--bg-card);
+    cursor: pointer;
+    font-size: 0.88rem;
+    font-weight: 600;
+    font-family: inherit;
+    color: var(--text-secondary);
+    transition: all 0.2s;
+}
+
+.source-tab:hover { border-color: var(--primary); color: var(--primary); }
+
+.source-tab.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+.tab-count {
+    background: rgba(255,255,255,0.3);
+    border-radius: 12px;
+    padding: 1px 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.source-tab:not(.active) .tab-count {
+    background: var(--bg-warm);
+    color: var(--text-muted);
+}
+
+/* ── Suche ──────────────────────────────────────── */
+.rezepte-search { margin-bottom: 14px; }
+
+.search-input {
+    width: 100%;
+    padding: 12px 18px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: 0.95rem;
     font-family: inherit;
     background: var(--bg-card);
     transition: border-color 0.2s;
@@ -25,34 +69,36 @@
     box-shadow: 0 0 0 3px rgba(232, 116, 59, 0.15);
 }
 
-/* Meal Filter Chips */
+/* ── Mahlzeit-Filter ────────────────────────────── */
 .meal-filter-row {
     display: flex;
     gap: 8px;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
     overflow-x: auto;
     padding-bottom: 4px;
     -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
 }
+
+.meal-filter-row::-webkit-scrollbar { display: none; }
 
 .meal-chip {
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 8px 16px;
+    gap: 5px;
+    padding: 7px 14px;
     border: 1px solid var(--border);
     border-radius: 24px;
     background: var(--bg-card);
     cursor: pointer;
     white-space: nowrap;
-    transition: all 0.2s ease;
+    transition: all 0.2s;
     font-family: inherit;
-    font-size: 0.85rem;
+    font-size: 0.83rem;
+    flex-shrink: 0;
 }
 
-.meal-chip:hover {
-    border-color: var(--primary);
-}
+.meal-chip:hover { border-color: var(--primary); }
 
 .meal-chip.active {
     background: var(--primary);
@@ -60,31 +106,29 @@
     border-color: var(--primary);
 }
 
-.meal-chip-icon {
-    font-size: 1rem;
-}
+.meal-chip-icon  { font-size: 1rem; }
+.meal-chip-label { font-weight: 600; }
 
-.meal-chip-label {
-    font-weight: 600;
-}
-
-/* Recipe Grid */
+/* ── Rezept-Grid ────────────────────────────────── */
 .rezepte-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
     gap: 16px;
 }
 
 .rezept-card-link {
     text-decoration: none;
     color: inherit;
+    display: block;
+    height: 100%;
 }
 
+/* ── Rezeptkarte ────────────────────────────────── */
 .rezept-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
-    padding: 20px;
+    overflow: hidden;
     transition: all 0.2s ease;
     box-shadow: var(--shadow-sm);
     height: 100%;
@@ -98,24 +142,37 @@
     border-color: var(--primary);
 }
 
-.rezept-card-icon {
-    font-size: 2.5rem;
-    margin-bottom: 12px;
+/* Visueller Header */
+.rezept-card-visual {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.rezept-card-icon { font-size: 3.8rem; }
+
+.rezept-card-content {
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 6px;
 }
 
 .rezept-card-title {
-    font-size: 1.05rem;
+    font-size: 0.98rem;
     font-weight: 700;
-    margin: 0 0 8px 0;
+    margin: 0;
     color: var(--text);
     line-height: 1.3;
 }
 
 .rezept-card-ingredients {
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     color: var(--text-secondary);
-    margin: 0 0 auto 0;
-    padding-bottom: 12px;
+    margin: 0 0 auto;
     line-height: 1.5;
 }
 
@@ -123,7 +180,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    padding-top: 12px;
+    padding-top: 10px;
     border-top: 1px solid var(--border);
     flex-wrap: wrap;
 }
@@ -131,27 +188,32 @@
 .rezept-tag {
     background: var(--primary-light);
     color: var(--primary-dark);
-    padding: 4px 10px;
+    padding: 3px 10px;
     border-radius: 12px;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 600;
 }
 
 .rezept-time {
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     color: var(--text-muted);
     font-weight: 500;
 }
 
-/* Responsive */
+/* ── Empty State ────────────────────────────────── */
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+}
+
+/* ── Responsive ─────────────────────────────────── */
 @media (min-width: 768px) {
-    .rezepte-grid {
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    }
+    .rezepte-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
 }
 
 @media (max-width: 380px) {
-    .rezepte-grid {
-        grid-template-columns: 1fr;
-    }
+    .rezepte-grid { grid-template-columns: 1fr; }
+    .rezept-card-visual { height: 80px; }
+    .rezept-card-icon { font-size: 3rem; }
 }

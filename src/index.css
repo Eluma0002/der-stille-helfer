@@ -503,10 +503,10 @@ nav a {
 }
 
 nav a .nav-label {
-    font-size: 0.6rem;
+    font-size: 0.55rem;
     font-weight: 600;
     color: var(--text-muted);
-    letter-spacing: 0.2px;
+    letter-spacing: 0.1px;
 }
 
 nav a:hover,
@@ -636,6 +636,125 @@ nav a.active::after {
         max-width: 1000px;
     }
 }
+
+/* ===== DARK MODE ════════════════════════════════ */
+/* Activated via JS: document.documentElement.setAttribute('data-theme', 'dark') */
+[data-theme="dark"] {
+    --bg-main:    #1C1916;
+    --bg-card:    #252220;
+    --bg-warm:    #2D2720;
+    --border:     #3D3830;
+    --border-hover: #524C44;
+    --text:       #F5EDD8;
+    --text-secondary: #CBBDA8;
+    --text-muted: #9A8C7C;
+    --primary-light:   #3A1A08;
+    --success-light:   #0D2A18;
+    --danger-light:    #2A0D0D;
+    --warning-light:   #2A1C08;
+    --accent-light:    #2A1C08;
+    --secondary-light: #0D2A18;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.40);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.50);
+    --shadow-lg: 0 8px 30px rgba(0,0,0,0.60);
+}
+
+[data-theme="dark"] header {
+    background: linear-gradient(135deg, #C05E25 0%, #9A3E0A 100%);
+}
+
+[data-theme="dark"] select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23CBBDA8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+}
+
+[data-theme="dark"] input[type="text"],
+[data-theme="dark"] input[type="email"],
+[data-theme="dark"] input[type="password"],
+[data-theme="dark"] input[type="number"],
+[data-theme="dark"] input[type="date"],
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+    color-scheme: dark;
+}
+
+/* Sekundär-Buttons & Filter-Chips im Dark Mode besser sichtbar machen */
+[data-theme="dark"] .btn.secondary {
+    background: #3D3528;
+    border-color: #5E5448;
+    color: var(--text);
+}
+
+[data-theme="dark"] .btn.secondary:hover:not(:disabled) {
+    background: #4D4333;
+    border-color: var(--primary);
+    color: var(--text);
+}
+
+[data-theme="dark"] .meal-chip {
+    background: #3A322A;
+    border-color: #5A5048;
+    color: var(--text);
+}
+
+[data-theme="dark"] .meal-chip:hover {
+    border-color: var(--primary);
+    background: #4A3E34;
+}
+
+[data-theme="dark"] .meal-chip.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+[data-theme="dark"] .source-tab:not(.active) {
+    background: #3A322A;
+    border-color: #5A5048;
+    color: var(--text);
+}
+
+/* ===== SHARED BOTTOM-SHEET MODAL ===== */
+.inv-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 200;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    animation: fadeIn 0.15s ease;
+}
+
+.inv-modal {
+    background: var(--bg-card);
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    padding: 24px 24px 32px;
+    width: 100%;
+    max-width: 500px;
+    animation: slideUp 0.25s ease;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+}
+
+.inv-modal h3 { margin: 0 0 4px; font-size: 1.1rem; }
+
+.inv-modal-name {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin: 0 0 20px;
+    font-weight: 600;
+}
+
+.inv-modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.inv-modal-actions .btn { flex: 1; }
 
 /* ===== SMALL MOBILE ===== */
 @media (max-width: 380px) {

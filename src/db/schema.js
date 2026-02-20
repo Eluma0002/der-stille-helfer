@@ -1,5 +1,5 @@
 import Dexie from 'dexie';
-import { ELVIS_RESTRICTIONS } from '../bots/substitutions.js';
+import { ELVIS_RESTRICTIONS, ELVIS_PROFILE } from '../bots/substitutions.js';
 
 export const db = new Dexie('DerStilleHelfer');
 
@@ -48,14 +48,16 @@ db.on('populate', async () => {
     await db.profile.add({
         id: 'profile-elvis',
         person_id: 'elvis',
-        dietary_restrictions: ELVIS_RESTRICTIONS
+        dietary_restrictions: ELVIS_RESTRICTIONS,
+        allergyProfile: ELVIS_PROFILE
     });
 
     // Seed Alberina profile with no restrictions
     await db.profile.add({
         id: 'profile-alberina',
         person_id: 'alberina',
-        dietary_restrictions: []
+        dietary_restrictions: [],
+        allergyProfile: { forbidden: [], allowed: [], excluded: [], substitutions: {} }
     });
 });
 
@@ -68,22 +70,28 @@ export async function ensureProfileExists(personId) {
         const existingProfile = await db.profile.where('person_id').equals(personId).first();
 
         if (!existingProfile) {
-            // Create profile if missing
             const restrictions = personId === 'elvis' ? ELVIS_RESTRICTIONS : [];
+            const allergyProfile = personId === 'elvis'
+                ? ELVIS_PROFILE
+                : { forbidden: [], allowed: [], excluded: [], substitutions: {} };
             await db.profile.add({
                 id: `profile-${personId}`,
                 person_id: personId,
-                dietary_restrictions: restrictions
+                dietary_restrictions: restrictions,
+                allergyProfile
             });
-            console.log(`Created profile for ${personId} with ${restrictions.length} restrictions`);
         } else {
-            // Check if Elvis needs dietary_restrictions populated
-            const needsRestrictions = personId === 'elvis' &&
-                (!existingProfile.dietary_restrictions || existingProfile.dietary_restrictions.length === 0);
-
-            if (needsRestrictions) {
-                await db.profile.update(existingProfile.id, { dietary_restrictions: ELVIS_RESTRICTIONS });
-                console.log(`Updated Elvis profile with ${ELVIS_RESTRICTIONS.length} restrictions`);
+            const updates = {};
+            if (personId === 'elvis' && (!existingProfile.dietary_restrictions || existingProfile.dietary_restrictions.length === 0)) {
+                updates.dietary_restrictions = ELVIS_RESTRICTIONS;
+            }
+            if (!existingProfile.allergyProfile) {
+                updates.allergyProfile = personId === 'elvis'
+                    ? ELVIS_PROFILE
+                    : { forbidden: [], allowed: [], excluded: [], substitutions: {} };
+            }
+            if (Object.keys(updates).length > 0) {
+                await db.profile.update(existingProfile.id, updates);
             }
         }
     } catch (err) {

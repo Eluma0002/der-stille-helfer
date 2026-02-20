@@ -4,8 +4,35 @@ import { Link } from 'react-router-dom';
 import { db } from '../db/schema';
 import { useUser } from '../context/UserContext';
 import ProductIcon from '../components/ProductIcon';
-import { DEFAULT_CATEGORIES, SAMPLE_RECIPES, MEAL_CATEGORIES } from '../constants';
+import { DEFAULT_CATEGORIES, MEAL_CATEGORIES } from '../constants';
 import './Uebersicht.css';
+
+const MEAL_COLORS = {
+    fruehstueck: '#FCD34D',
+    mittag:      '#60A5FA',
+    abend:       '#A78BFA',
+    snack:       '#34D399',
+    salat:       '#86EFAC',
+};
+
+// Häufige Produkte kommen zuerst
+const COMMON_PRODUCTS = [
+    'milch', 'butter', 'eier', 'ei', 'joghurt', 'käse', 'quark', 'sahne',
+    'rahm', 'frischkäse', 'mozzarella',
+    'brot', 'toast', 'brötchen',
+    'apfel', 'banane', 'orange', 'traube', 'erdbeere',
+    'kartoffel', 'tomate', 'gurke', 'zwiebel', 'karotte', 'paprika',
+    'nudeln', 'pasta', 'reis', 'mehl', 'zucker', 'salz', 'öl',
+    'wasser', 'saft', 'kaffee', 'tee',
+    'fleisch', 'huhn', 'hühnchen', 'hack', 'wurst', 'schinken', 'lachs',
+    'schokolade', 'marmelade', 'honig',
+];
+
+const getProductPriority = (name) => {
+    const lower = name.toLowerCase();
+    const idx = COMMON_PRODUCTS.findIndex(p => lower.includes(p));
+    return idx === -1 ? COMMON_PRODUCTS.length : idx;
+};
 
 /**
  * Helper: format today's date in German
@@ -84,22 +111,26 @@ const Uebersicht = () => {
         });
     }, [baseRezepte, eigeneRezepte]);
 
-    // --- Products grouped by storage location ---
+    // --- Products grouped by storage location (sorted by familiarity) ---
     const groupedProducts = useMemo(() => {
         if (!produkte) return {};
 
         const groups = {};
-        DEFAULT_CATEGORIES.forEach(cat => {
-            groups[cat.id] = [];
-        });
+        DEFAULT_CATEGORIES.forEach(cat => { groups[cat.id] = []; });
 
         produkte.forEach(p => {
             const location = p.ort || p.kategorie || 'vorrat';
-            if (groups[location]) {
-                groups[location].push(p);
-            } else {
-                groups['vorrat'].push(p);
-            }
+            if (groups[location]) groups[location].push(p);
+            else groups['vorrat'].push(p);
+        });
+
+        // Häufige Produkte zuerst, dann nach Ablaufdatum
+        DEFAULT_CATEGORIES.forEach(cat => {
+            groups[cat.id].sort((a, b) => {
+                const pDiff = getProductPriority(a.name) - getProductPriority(b.name);
+                if (pDiff !== 0) return pDiff;
+                return new Date(a.ablauf) - new Date(b.ablauf);
+            });
         });
 
         return groups;
@@ -137,9 +168,7 @@ const Uebersicht = () => {
     // --- Build recipe link path ---
     const getRecipeLink = (recipe) => {
         if (!recipe) return '/rezepte';
-        return recipe.type === 'base'
-            ? `/rezept/${recipe.id}`
-            : `/eigenes-rezept/${recipe.id}`;
+        return `/rezept/${recipe.id}`;
     };
 
     return (
@@ -155,24 +184,36 @@ const Uebersicht = () => {
             <section className="meal-suggestions-section">
                 <h3 className="section-title">Heutige Vorschläge</h3>
                 <div className="meal-suggestions-scroll">
-                    {mealSuggestions.map(meal => (
-                        <div key={meal.id} className="meal-suggestion-card">
-                            <div className="meal-card-header">
-                                <span className="meal-icon">{meal.icon}</span>
-                                <span className="meal-label">{meal.name}</span>
-                            </div>
-                            {meal.recipe ? (
-                                <Link to={getRecipeLink(meal.recipe)} className="meal-card-body">
-                                    <span className="meal-recipe-name">{meal.recipe.name}</span>
-                                    <span className="meal-recipe-time">{meal.recipe.zeit} Min.</span>
-                                </Link>
-                            ) : (
-                                <div className="meal-card-body meal-empty">
-                                    <span className="meal-recipe-name">Kein Rezept</span>
+                    {mealSuggestions.map(meal => {
+                        const color = MEAL_COLORS[meal.id] || '#F97316';
+                        return (
+                            <div
+                                key={meal.id}
+                                className="meal-suggestion-card"
+                                style={{ '--meal-color': color }}
+                            >
+                                <div
+                                    className="meal-card-visual"
+                                    style={{ background: `linear-gradient(135deg, ${color}cc, ${color}44)` }}
+                                >
+                                    <span className="meal-icon">{meal.icon}</span>
                                 </div>
-                            )}
-                        </div>
-                    ))}
+                                <div className="meal-card-content">
+                                    <span className="meal-label">{meal.name}</span>
+                                    {meal.recipe ? (
+                                        <Link to={getRecipeLink(meal.recipe)} className="meal-card-body">
+                                            <span className="meal-recipe-name">{meal.recipe.name}</span>
+                                            <span className="meal-recipe-time">⏱ {meal.recipe.zeit} Min.</span>
+                                        </Link>
+                                    ) : (
+                                        <div className="meal-card-body meal-empty">
+                                            <span className="meal-recipe-name">Kein Rezept</span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        );
+                    })}
                 </div>
             </section>
 
@@ -208,35 +249,45 @@ const Uebersicht = () => {
                 </button>
             </div>
 
-            {/* 4. Fridge Visualization - products grouped by storage location */}
+            {/* 4. Vorrat-Überblick – kompaktes Grid */}
             <section className="storage-section">
-                <h3 className="section-title">Dein Vorrat</h3>
+                <div className="storage-section-header">
+                    <h3 className="section-title">Dein Vorrat</h3>
+                    <Link to="/produkte" className="storage-see-all">Alle anzeigen →</Link>
+                </div>
                 {DEFAULT_CATEGORIES.map(cat => {
                     const items = groupedProducts[cat.id] || [];
                     if (items.length === 0) return null;
+                    const visible  = items.slice(0, 8);
+                    const overflow = items.length - 8;
                     return (
-                        <div key={cat.id} className="storage-group">
+                        <div
+                            key={cat.id}
+                            className="storage-group"
+                            style={{ borderLeftColor: cat.color, background: `${cat.color}0a` }}
+                        >
                             <div className="storage-group-header">
-                                <span
-                                    className="storage-group-badge"
-                                    style={{ backgroundColor: cat.color }}
-                                >
+                                <span className="storage-group-badge" style={{ backgroundColor: cat.color }}>
                                     {cat.icon}
                                 </span>
                                 <span className="storage-group-name">{cat.name}</span>
-                                <span className="storage-group-count">{items.length}</span>
+                                <span className="storage-group-count" style={{ background: `${cat.color}22`, color: cat.color }}>
+                                    {items.length}
+                                </span>
                             </div>
-                            <div className="storage-items-scroll">
-                                {items.map(p => (
-                                    <div
-                                        key={p.id}
-                                        className="storage-item"
-                                        onClick={() => window.location.hash = '#/produkte'}
-                                    >
+                            <div className="storage-items-grid">
+                                {visible.map(p => (
+                                    <Link key={p.id} to="/produkte" className="storage-item">
                                         <ProductIcon productName={p.name} size="medium" />
                                         <span className="storage-item-name">{p.name}</span>
-                                    </div>
+                                    </Link>
                                 ))}
+                                {overflow > 0 && (
+                                    <Link to="/produkte" className="storage-item storage-item-more">
+                                        <span className="storage-more-count">+{overflow}</span>
+                                        <span className="storage-item-name">mehr</span>
+                                    </Link>
+                                )}
                             </div>
                         </div>
                     );
@@ -244,12 +295,9 @@ const Uebersicht = () => {
                 {produkte && produkte.length === 0 && (
                     <div className="fridge-empty">
                         <p>Noch keine Produkte vorhanden</p>
-                        <button
-                            className="btn secondary small"
-                            onClick={() => window.location.hash = '#/produkte'}
-                        >
+                        <Link to="/produkte" className="btn secondary small">
                             Produkte hinzufügen
-                        </button>
+                        </Link>
                     </div>
                 )}
             </section>

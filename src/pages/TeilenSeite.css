@@ -1,24 +1,35 @@
-/* Teilen statt Wegwerfen */
+/* ── Teilen statt Wegwerfen ──────────────────────── */
 .teilen-page {
     animation: fadeIn 0.3s ease-out;
 }
 
+/* ── Header ─────────────────────────────────────── */
 .teilen-header {
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
 .teilen-header h2 {
-    margin: 0 0 4px 0;
-    font-size: 1.5rem;
+    margin: 0 0 2px 0;
+    font-size: 1.4rem;
 }
 
 .teilen-subtitle {
     color: var(--text-secondary);
-    font-size: 0.9rem;
-    margin: 0;
+    font-size: 0.88rem;
+    margin: 0 0 10px;
 }
 
-/* Anbieten Button */
+.teilen-privacy-hint {
+    background: #f0fdf4;
+    border: 1px solid #86efac;
+    border-radius: var(--radius-md);
+    padding: 8px 14px;
+    font-size: 0.82rem;
+    color: #15803d;
+    font-weight: 500;
+}
+
+/* ── Anbieten-Button ─────────────────────────────── */
 .teilen-anbieten-btn {
     width: 100%;
     padding: 14px;
@@ -30,7 +41,7 @@
     font-weight: 700;
     font-family: inherit;
     cursor: pointer;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
     transition: background 0.2s;
 }
 
@@ -38,14 +49,32 @@
     background: #219a52;
 }
 
-/* Share Form */
+/* ── Formular ────────────────────────────────────── */
 .teilen-form {
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
     padding: 20px;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
     animation: fadeIn 0.2s ease-out;
+}
+
+.form-title {
+    margin: 0 0 16px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+/* Zweispaltig auf breiten Screens */
+.teilen-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+@media (max-width: 360px) {
+    .teilen-form-row { grid-template-columns: 1fr; }
 }
 
 .teilen-form-field {
@@ -54,7 +83,7 @@
 
 .teilen-form-field label {
     display: block;
-    font-size: 0.85rem;
+    font-size: 0.83rem;
     font-weight: 600;
     color: var(--text-secondary);
     margin-bottom: 6px;
@@ -67,10 +96,11 @@
     padding: 10px 14px;
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
-    font-size: 0.95rem;
+    font-size: 0.93rem;
     font-family: inherit;
     background: var(--bg-main);
     transition: border-color 0.2s;
+    box-sizing: border-box;
 }
 
 .teilen-form-field input:focus,
@@ -83,9 +113,54 @@
 
 .teilen-form-field textarea {
     resize: vertical;
-    min-height: 60px;
+    min-height: 58px;
 }
 
+/* ── Art-Buttons ─────────────────────────────────── */
+.art-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.art-btn {
+    padding: 7px 14px;
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    background: var(--bg-main);
+    font-size: 0.83rem;
+    font-family: inherit;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+}
+
+.art-btn:hover {
+    border-color: var(--secondary);
+    color: var(--secondary);
+}
+
+.art-btn.active {
+    background: var(--secondary);
+    border-color: var(--secondary);
+    color: white;
+}
+
+/* ── Behälter-Hinweis ───────────────────────────── */
+.behaelter-hint {
+    margin: 6px 0 0;
+    padding: 8px 12px;
+    background: #fffbeb;
+    border-left: 3px solid #fbbf24;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    font-size: 0.82rem;
+    color: #92400e;
+    line-height: 1.4;
+}
+
+/* ── Formular-Aktionen ──────────────────────────── */
 .teilen-form-actions {
     display: flex;
     gap: 10px;
@@ -119,11 +194,91 @@
     transition: background 0.2s;
 }
 
-.teilen-btn-submit:hover {
-    background: #219a52;
+.teilen-btn-submit:hover { background: #219a52; }
+
+/* ── Bald ablaufend – horizontaler Streifen ──────── */
+.ablaufend-section {
+    margin-bottom: 20px;
 }
 
-/* Empty state */
+.ablaufend-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0 0 10px;
+}
+
+.ablaufend-scroll {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.ablaufend-scroll::-webkit-scrollbar { display: none; }
+
+.ablaufend-card {
+    min-width: 140px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px 14px;
+    border-radius: var(--radius-md);
+    border: 1px solid transparent;
+    font-size: 0.82rem;
+}
+
+.ablaufend-card.expiring-ok {
+    background: #f0fdf4;
+    border-color: #86efac;
+}
+
+.ablaufend-card.expiring-warning {
+    background: #fffbeb;
+    border-color: #fcd34d;
+}
+
+.ablaufend-card.expiring-soon {
+    background: #fff1f2;
+    border-color: #fca5a5;
+}
+
+.ablaufend-card.expired {
+    background: #fef2f2;
+    border-color: var(--danger);
+}
+
+.ablaufend-name {
+    font-weight: 700;
+    color: var(--text);
+    font-size: 0.88rem;
+}
+
+.ablaufend-date {
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+}
+
+.ablaufend-share-btn {
+    margin-top: 4px;
+    padding: 5px 10px;
+    background: var(--secondary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 0.78rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.ablaufend-share-btn:hover { background: #219a52; }
+
+/* ── Leerer Zustand ──────────────────────────────── */
 .teilen-empty {
     text-align: center;
     padding: 40px 20px;
@@ -147,69 +302,80 @@
     line-height: 1.5;
 }
 
-/* Offer list */
+/* ── Angebots-Listen ─────────────────────────────── */
 .teilen-list {
     margin-bottom: 24px;
 }
 
 .teilen-list-title {
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 700;
     color: var(--text);
-    margin: 0 0 12px 0;
+    margin: 0 0 10px 0;
 }
 
-.teilen-list--completed {
-    opacity: 0.6;
-}
-
-/* Offer cards */
+/* ── Angebots-Karten ─────────────────────────────── */
 .teilen-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
-    padding: 16px;
+    padding: 14px 16px;
     margin-bottom: 12px;
     box-shadow: var(--shadow-sm);
     transition: box-shadow 0.2s;
 }
 
-.teilen-card:hover {
-    box-shadow: var(--shadow-md);
-}
+.teilen-card:hover { box-shadow: var(--shadow-md); }
 
-.teilen-card--verfuegbar {
-    border-left: 4px solid var(--secondary);
-}
+.teilen-card--verfuegbar { border-left: 4px solid var(--secondary); }
+.teilen-card--reserviert { border-left: 4px solid var(--warning); }
+.teilen-card--abgeholt   { border-left: 4px solid var(--text-muted); }
 
-.teilen-card--reserviert {
-    border-left: 4px solid var(--warning);
-}
-
-.teilen-card--abgeholt {
-    border-left: 4px solid var(--text-muted);
-}
-
+/* Karten-Header: Icon + Name/Menge + Badge */
 .teilen-card-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    gap: 10px;
     margin-bottom: 10px;
 }
 
-.teilen-card-name {
-    font-size: 1.05rem;
-    font-weight: 700;
-    color: var(--text);
+.teilen-card-icon {
+    font-size: 1.6rem;
+    flex-shrink: 0;
+    line-height: 1;
 }
 
-/* Status badges */
+.teilen-card-title-block {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+}
+
+.teilen-card-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.teilen-card-menge {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* ── Status-Badges ───────────────────────────────── */
 .teilen-badge {
-    font-size: 0.75rem;
+    font-size: 0.73rem;
     font-weight: 600;
-    padding: 3px 10px;
+    padding: 3px 9px;
     border-radius: 12px;
     white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .teilen-badge--verfuegbar {
@@ -227,30 +393,36 @@
     color: var(--text-muted);
 }
 
-.teilen-card-details {
+/* ── Tags (Art, Behälter) ───────────────────────── */
+.teilen-card-tags {
     display: flex;
-    gap: 12px;
+    flex-wrap: wrap;
+    gap: 6px;
     margin-bottom: 8px;
-    font-size: 0.85rem;
-    color: var(--text-secondary);
 }
 
-.teilen-card-art {
+.teilen-tag {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 12px;
+}
+
+.art-tag {
     background: var(--primary-light);
     color: var(--primary-dark);
-    padding: 2px 8px;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 0.75rem;
 }
 
-.teilen-card-menge {
-    font-weight: 600;
+.behaelter-tag {
+    background: #f0f9ff;
+    color: #0369a1;
+    border: 1px solid #bae6fd;
 }
 
+/* ── Haltbarkeit ─────────────────────────────────── */
 .teilen-card-expiry {
-    font-size: 0.8rem;
-    padding: 6px 10px;
+    font-size: 0.82rem;
+    padding: 7px 12px;
     border-radius: var(--radius-sm);
     margin-bottom: 8px;
     display: flex;
@@ -258,49 +430,96 @@
     align-items: center;
 }
 
-.teilen-card-expiry.expiring-ok {
-    background: var(--success-light);
-    color: var(--secondary);
-}
-
-.teilen-card-expiry.expiring-warning {
-    background: var(--warning-light);
-    color: var(--warning);
-}
-
-.teilen-card-expiry.expiring-soon {
-    background: #FEE2E2;
-    color: var(--danger);
-}
-
-.teilen-card-expiry.expired {
-    background: var(--danger-light);
-    color: var(--danger);
-    font-weight: 700;
-}
+.teilen-card-expiry.expiring-ok      { background: var(--success-light); color: var(--secondary); }
+.teilen-card-expiry.expiring-warning { background: var(--warning-light);  color: var(--warning); }
+.teilen-card-expiry.expiring-soon    { background: #FEE2E2; color: var(--danger); }
+.teilen-card-expiry.expired          { background: var(--danger-light); color: var(--danger); font-weight: 700; }
 
 .teilen-expiry-text {
     font-weight: 700;
     font-size: 0.75rem;
 }
 
+/* ── Ort / Notizen ───────────────────────────────── */
 .teilen-card-ort,
-.teilen-card-behaelter,
-.teilen-card-notizen {
-    font-size: 0.82rem;
+.teilen-card-behaelter {
+    font-size: 0.83rem;
     color: var(--text-secondary);
     margin-bottom: 6px;
-    padding: 4px 0;
 }
 
 .teilen-card-notizen {
+    font-size: 0.82rem;
     font-style: italic;
+    color: var(--text-secondary);
     background: var(--bg-warm);
     padding: 8px 10px;
     border-radius: var(--radius-sm);
+    margin-bottom: 6px;
 }
 
-/* Card actions */
+/* ── Status-Fortschritt ──────────────────────────── */
+.status-steps {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    margin: 12px 0 8px;
+}
+
+.status-step {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    position: relative;
+}
+
+/* Linie zwischen Schritten */
+.status-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    width: 100%;
+    height: 2px;
+    background: var(--border);
+}
+
+.status-step.done::after  { background: var(--secondary); }
+.status-step.active::after { background: var(--border); }
+
+.status-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--border);
+    border: 2px solid var(--border);
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+}
+
+.status-step.done .status-dot {
+    background: var(--secondary);
+    border-color: var(--secondary);
+}
+
+.status-step.active .status-dot {
+    background: white;
+    border-color: var(--secondary);
+    box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.2);
+}
+
+.status-step.active {
+    color: var(--secondary);
+    font-weight: 700;
+}
+
+/* ── Karten-Aktionen ─────────────────────────────── */
 .teilen-card-actions {
     display: flex;
     gap: 8px;
@@ -311,7 +530,7 @@
 
 .teilen-btn-action {
     flex: 1;
-    padding: 8px 12px;
+    padding: 9px 12px;
     background: var(--secondary);
     color: white;
     border: none;
@@ -323,12 +542,10 @@
     transition: background 0.2s;
 }
 
-.teilen-btn-action:hover {
-    background: #219a52;
-}
+.teilen-btn-action:hover { background: #219a52; }
 
 .teilen-btn-withdraw {
-    padding: 8px 12px;
+    padding: 9px 12px;
     background: none;
     color: var(--text-muted);
     border: 1px solid var(--border);
@@ -344,4 +561,47 @@
     background: var(--danger-light);
     color: var(--danger);
     border-color: var(--danger);
+}
+
+/* ── Behälter-Rückgabe ───────────────────────────── */
+.behaelter-return-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 8px 0;
+    padding: 10px 14px;
+    background: #fffbeb;
+    border: 1px solid #fcd34d;
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    color: #92400e;
+    font-weight: 500;
+}
+
+.teilen-btn-return {
+    padding: 6px 14px;
+    background: #fbbf24;
+    color: #78350f;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s;
+}
+
+.teilen-btn-return:hover { background: #f59e0b; }
+
+.behaelter-return-done {
+    margin: 8px 0;
+    padding: 8px 14px;
+    background: #f0fdf4;
+    border: 1px solid #86efac;
+    border-radius: var(--radius-md);
+    font-size: 0.83rem;
+    color: #15803d;
+    font-weight: 500;
 }

@@ -27,7 +27,8 @@ export const PRODUCT_EMOJIS = {
     'apfel': '🍎',
     'äpfel': '🍎',
     'aepfel': '🍎',
-    'banane': '�banana',
+    'banane': '🍌',
+    'bananen': '🍌',
     'orange': '🍊',
     'traube': '🍇',
     'erdbeere': '🍓',
@@ -40,6 +41,26 @@ export const PRODUCT_EMOJIS = {
     'ananas': '🍍',
     'mango': '🥭',
     'kiwi': '🥝',
+    'brombeere': '🫐',
+    'himbeere': '🍓',
+    'weintraube': '🍇',
+    'johannisbeere': '🍇',
+    'pflaume': '🍑',
+    'zwetschge': '🍑',
+    'nektarine': '🍑',
+    'kirschen': '🍒',
+    'melone': '🍈',
+    'wassermelone': '🍉',
+    'honigmelone': '🍈',
+    'feige': '🫐',
+    'dattel': '🫐',
+    'granatapfel': '🍎',
+    'grapefruit': '🍊',
+    'clementine': '🍊',
+    'mandarine': '🍊',
+    'kokosnuss': '🥥',
+    'papaya': '🥭',
+    'physalis': '🍊',
 
     // Vegetables
     'tomate': '🍅',
@@ -145,13 +166,20 @@ export const normalizeIconName = (productName) => {
         .replace(/[^a-z0-9-]/g, '');
 };
 
+// Products with custom SVG icons (in /public/icons/*.svg)
+const SVG_ICONS = new Set([
+    'banane', 'bananen', 'brombeere', 'himbeere', 'erdbeere',
+    'apfel', 'birne', 'heidelbeere', 'orange', 'zitrone', 'traube'
+]);
+
 /**
  * Get icon path for a product
- * Returns the path to try loading
+ * Returns the path to try loading (SVG for fruits, PNG for others)
  */
 export const getIconPath = (productName) => {
     const normalized = normalizeIconName(productName);
     if (!normalized) return null;
+    if (SVG_ICONS.has(normalized)) return `/icons/${normalized}.svg`;
     return `/icons/${normalized}.png`;
 };
 

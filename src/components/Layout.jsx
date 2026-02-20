@@ -1,32 +1,58 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
+import { useTheme } from '../hooks/useTheme';
 import WelcomeScreen from './WelcomeScreen';
 import UserSwitcher from './UserSwitcher';
 
 const NAV_ITEMS = [
-    { path: '/uebersicht', icon: '🏠', label: 'Home' },
-    { path: '/produkte', icon: '🧊', label: 'Inventar' },
-    { path: '/rezepte', icon: '📖', label: 'Rezepte' },
-    { path: '/koch-assistent', icon: '🍳', label: 'Koch-AI' },
-    { path: '/einkauf', icon: '🛒', label: 'Einkauf' },
-    { path: '/teilen', icon: '🤝', label: 'Teilen' },
-    { path: '/einstellungen', icon: '⚙️', label: 'Mehr' },
+    { path: '/uebersicht',     icon: '🏠', label: 'Home'     },
+    { path: '/produkte',       icon: '🧊', label: 'Inventar' },
+    { path: '/rezepte',        icon: '📖', label: 'Rezepte'  },
+    { path: '/wochenplan',     icon: '📅', label: 'Plan'     },
+    { path: '/koch-assistent', icon: '🍳', label: 'Koch-AI'  },
+    { path: '/einkauf',        icon: '🛒', label: 'Einkauf'  },
+    { path: '/teilen',         icon: '🤝', label: 'Teilen'   },
 ];
 
 export default function Layout({ children }) {
     const { isFirstRun } = useUser();
     const location = useLocation();
+    const { cycle, icon, label } = useTheme();
 
-    if (isFirstRun) {
-        return <WelcomeScreen />;
-    }
+    if (isFirstRun) return <WelcomeScreen />;
 
     return (
         <div className="fridge-app">
             <header>
                 <h1>Der Stille Helfer</h1>
-                <UserSwitcher />
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <button
+                        onClick={cycle}
+                        title={`Design: ${label}`}
+                        style={{
+                            background: 'rgba(255,255,255,0.18)',
+                            border: 'none',
+                            borderRadius: '8px',
+                            padding: '5px 9px',
+                            cursor: 'pointer',
+                            fontSize: '1.1rem',
+                            lineHeight: 1,
+                            color: 'white',
+                        }}
+                    >{icon}</button>
+                    <Link
+                        to="/einstellungen"
+                        style={{
+                            fontSize: '1.3rem',
+                            textDecoration: 'none',
+                            opacity: location.pathname === '/einstellungen' ? 1 : 0.75,
+                            lineHeight: 1,
+                        }}
+                        title="Einstellungen"
+                    >⚙️</Link>
+                    <UserSwitcher />
+                </div>
             </header>
             <main>{children}</main>
             <nav>

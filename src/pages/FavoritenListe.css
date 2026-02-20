@@ -1,1 +1,91 @@
-.favorites-view { display: grid; gap: 10px; }
+.favoriten-page { animation: fadeIn 0.3s ease-out; }
+
+.fav-count {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    margin: -10px 0 16px;
+}
+
+.fav-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+    gap: 14px;
+}
+
+.fav-card {
+    position: relative;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;
+}
+
+.fav-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary);
+}
+
+.fav-card-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
+.fav-card-visual {
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fav-card-icon { font-size: 2.4rem; }
+
+.fav-card-body {
+    padding: 10px 12px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.fav-card-body h4 {
+    font-size: 0.9rem;
+    margin: 0;
+    color: var(--text);
+    line-height: 1.3;
+}
+
+.fav-card-meta {
+    display: flex;
+    gap: 10px;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+
+.fav-remove-btn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background: rgba(0,0,0,0.35);
+    border: none;
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    font-size: 0.7rem;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.fav-card:hover .fav-remove-btn,
+.fav-card:focus-within .fav-remove-btn { opacity: 1; }
+
+@media (max-width: 380px) {
+    .fav-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+}
