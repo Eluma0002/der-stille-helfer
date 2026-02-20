@@ -7,6 +7,7 @@ import Uebersicht from './pages/Uebersicht';
 import ProdukteListe from './pages/ProdukteListe';
 import RezepteListe from './pages/RezepteListe';
 import KochAssistent from './pages/KochAssistent';
+import AlgoKoch from './pages/AlgoKoch';
 import EinkaufsListe from './pages/EinkaufsListe';
 import FavoritenListe from './pages/FavoritenListe';
 import NotizenListe from './pages/NotizenListe';
@@ -14,6 +15,7 @@ import Einstellungen from './pages/Einstellungen';
 import BackupExport from './pages/BackupExport';
 import RezeptDetails from './pages/RezeptDetails';
 import TeilenSeite from './pages/TeilenSeite';
+import Essensplan from './pages/Essensplan';
 
 function App() {
     const {
@@ -28,13 +30,8 @@ function App() {
         },
     });
 
-    const handleUpdate = () => {
-        updateServiceWorker(true);
-    };
-
-    const handleDismiss = () => {
-        setNeedRefresh(false);
-    };
+    const handleUpdate = () => updateServiceWorker(true);
+    const handleDismiss = () => setNeedRefresh(false);
 
     return (
         <>
@@ -47,18 +44,21 @@ function App() {
             <HashRouter>
                 <Layout>
                     <Routes>
-                        <Route path="/uebersicht" element={<Uebersicht />} />
-                        <Route path="/produkte" element={<ProdukteListe />} />
-                        <Route path="/rezepte" element={<RezepteListe />} />
-                        <Route path="/koch-assistent" element={<KochAssistent />} />
-                        <Route path="/einkauf" element={<EinkaufsListe />} />
-                        <Route path="/favoriten" element={<FavoritenListe />} />
-                        <Route path="/notizen" element={<NotizenListe />} />
-                        <Route path="/einstellungen" element={<Einstellungen />} />
-                        <Route path="/backup" element={<BackupExport />} />
-                        <Route path="/teilen" element={<TeilenSeite />} />
-                        <Route path="/rezept/:id" element={<RezeptDetails />} />
-                        <Route path="/" element={<Navigate to="/uebersicht" replace />} />
+                        <Route path="/uebersicht"     element={<Uebersicht />} />
+                        <Route path="/produkte"        element={<ProdukteListe />} />
+                        <Route path="/rezepte"         element={<RezepteListe />} />
+                        <Route path="/koch-assistent"  element={<AlgoKoch />} />
+                        <Route path="/einkauf"         element={<EinkaufsListe />} />
+                        <Route path="/favoriten"       element={<FavoritenListe />} />
+                        <Route path="/notizen"         element={<NotizenListe />} />
+                        <Route path="/einstellungen"   element={<Einstellungen />} />
+                        <Route path="/backup"          element={<BackupExport />} />
+                        <Route path="/teilen"          element={<TeilenSeite />} />
+                        <Route path="/rezept/:id"      element={<RezeptDetails />} />
+                        <Route path="/essensplan"      element={<Essensplan />} />
+                        {/* Legacy redirect */}
+                        <Route path="/scannen"         element={<Navigate to="/produkte" replace />} />
+                        <Route path="/"                element={<Navigate to="/uebersicht" replace />} />
                     </Routes>
                 </Layout>
             </HashRouter>

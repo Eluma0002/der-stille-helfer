@@ -27,7 +27,21 @@
 /* Search */
 .produkte-search {
     position: relative;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon {
+    position: absolute;
+    left: 12px;
+    font-size: 0.95rem;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.search-input-with-icon {
+    padding-left: 36px !important;
 }
 
 .search-input {
@@ -281,4 +295,362 @@
         min-width: 140px;
         max-width: 160px;
     }
+}
+
+/* ── Header right side (count + scanner toggle) ──────────────── */
+.produkte-header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+}
+
+.scanner-toggle-btn {
+    padding: 7px 14px;
+    background: var(--bg-warm);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    color: var(--text);
+    transition: all 0.2s ease;
+}
+
+.scanner-toggle-btn:hover,
+.scanner-toggle-btn.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+/* ── Scanner Panel ───────────────────────────────────────────── */
+.scanner-panel {
+    margin-bottom: 16px;
+    animation: fadeIn 0.2s ease-out;
+    padding: 0;
+    overflow: hidden;
+}
+
+.scanner-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.scanner-tabs::-webkit-scrollbar { display: none; }
+
+.scanner-tab-btn {
+    flex: 0 0 auto;
+    min-width: 72px;
+    padding: 12px 10px;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    font-size: 0.82rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.scanner-tab-btn.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+    background: var(--primary-light);
+}
+
+.scanner-tab-btn:hover:not(.active) {
+    background: var(--bg-warm);
+    color: var(--text);
+}
+
+.scanner-content {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.scanner-hint {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+.scanner-ki-warning {
+    padding: 10px 14px;
+    background: var(--warning-light, #fff8e1);
+    border: 1px solid var(--warning);
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    color: var(--text);
+}
+
+.scan-file-label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.scan-start-btn {
+    width: 100%;
+}
+
+.scan-loading {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-style: italic;
+}
+
+.scan-error {
+    margin: 0;
+    color: var(--danger);
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 8px 12px;
+    background: var(--danger-light, #fff0f0);
+    border-radius: var(--radius-sm);
+}
+
+.kassen-info {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+/* ── AI Review ───────────────────────────────────────────────── */
+.ai-review {
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+}
+
+.ai-review-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0 0 10px 0;
+}
+
+.ai-review-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 240px;
+    overflow-y: auto;
+    margin-bottom: 12px;
+}
+
+.ai-review-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    background: var(--bg-warm);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.ai-review-item.deselected {
+    opacity: 0.4;
+}
+
+.ai-review-item input[type="checkbox"] {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    accent-color: var(--primary);
+}
+
+.ai-item-name {
+    flex: 1;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.ai-item-kat {
+    font-size: 0.78rem;
+    padding: 4px 6px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg-card);
+    font-family: inherit;
+    color: var(--text);
+    max-width: 130px;
+}
+
+.ai-review-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+/* ── Category accordion button ───────────────────────────────── */
+.kategorie-accordion {
+    width: 100%;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    text-align: left;
+}
+
+.kategorie-arrow {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+/* ── Product photo ────────────────────────────────────────────── */
+.produkt-foto {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    border-radius: 6px;
+    background: transparent;
+}
+
+.foto-upload-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.foto-preview {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg-warm);
+}
+
+.foto-upload-btn {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+/* ── "Show more" tile ────────────────────────────────────────── */
+.produkt-card-more {
+    cursor: pointer;
+    border-style: dashed;
+    background: var(--bg-warm);
+    border-color: var(--border);
+    justify-content: center;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+
+.produkt-card-more:hover {
+    opacity: 1;
+    border-color: var(--primary);
+}
+
+.more-count {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.more-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* ── Expiring section ─────────────────────────────────────────── */
+.expiring-section {
+    margin-bottom: 20px;
+}
+
+.expiring-section-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--warning);
+    margin: 0 0 10px 0;
+}
+
+.expiring-card {
+    border-left-color: var(--warning) !important;
+}
+
+/* ── Neue Scanner-Tabs: Sprache & Zettel ─────────────────────────────────── */
+
+.scanner-nokey-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--secondary);
+    background: var(--success-light);
+    border: 1px solid var(--secondary);
+    border-radius: 99px;
+    padding: 3px 10px;
+    align-self: flex-start;
+}
+
+/* Sprache – Live-Transkript */
+.voice-transcript {
+    padding: 10px 14px;
+    background: var(--bg-warm);
+    border: 1.5px solid var(--primary);
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    color: var(--text);
+    line-height: 1.4;
+    min-height: 2rem;
+}
+
+/* OCR Fortschrittsanzeige */
+.ocr-loading-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 1.5rem 0;
+}
+
+.ocr-loading-icon {
+    font-size: 2.5rem;
+}
+
+.ocr-progress-bar {
+    width: 100%;
+    height: 6px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+}
+
+.ocr-progress-fill {
+    height: 100%;
+    background: var(--primary);
+    border-radius: 99px;
+    transition: width 0.3s ease;
+}
+
+/* Danger-Button für Stopp */
+.btn.danger {
+    background: var(--danger);
+    color: #fff;
+    border-color: var(--danger);
+}
+
+.btn.danger:hover {
+    background: #c0392b;
+    border-color: #c0392b;
 }
