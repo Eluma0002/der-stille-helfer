@@ -4,6 +4,12 @@ export default function ErrorFallback({ error, resetErrorBoundary }) {
       <div className="error-content">
         <h1>Etwas ist schiefgelaufen</h1>
         <p className="error-message">{error.message}</p>
+        <details style={{ textAlign: 'left', marginBottom: 16, fontSize: '0.75rem', color: '#999' }}>
+          <summary style={{ cursor: 'pointer' }}>Details (für Entwickler)</summary>
+          <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', marginTop: 8 }}>
+            {error.stack}
+          </pre>
+        </details>
         <button className="btn-primary" onClick={resetErrorBoundary}>
           Erneut versuchen
         </button>

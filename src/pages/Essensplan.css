@@ -1,0 +1,236 @@
+/* ─── Header ─────────────────────────────────────────────────────────────────── */
+.essensplan-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.essensplan-header h2 {
+    margin: 0;
+}
+
+/* ─── KI Hinweis ─────────────────────────────────────────────────────────────── */
+.essensplan-ki-hinweis {
+    text-align: center;
+    padding: 20px;
+}
+
+.essensplan-ki-hinweis p {
+    margin: 0 0 8px 0;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+.essensplan-ki-hinweis strong {
+    color: var(--primary);
+}
+
+/* ─── Generate-Button ────────────────────────────────────────────────────────── */
+.essensplan-generate-btn {
+    width: 100%;
+    margin-bottom: 16px;
+    padding: 14px;
+    font-size: 1rem;
+}
+
+.essensplan-generate-btn.loading {
+    opacity: 0.75;
+}
+
+/* ─── Leer-Zustand ───────────────────────────────────────────────────────────── */
+.essensplan-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+}
+
+.essensplan-empty-icon {
+    font-size: 4rem;
+    margin-bottom: 16px;
+}
+
+.essensplan-empty p:first-of-type {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    margin: 0 0 8px;
+}
+
+.essensplan-empty-sub {
+    font-size: 0.9rem;
+    max-width: 300px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* ─── Zusammenfassung ────────────────────────────────────────────────────────── */
+.essensplan-summary {
+    border-left: 4px solid var(--primary);
+}
+
+.essensplan-summary-text {
+    margin: 0 0 6px;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.essensplan-created {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+/* ─── Tages-Karten ───────────────────────────────────────────────────────────── */
+.essensplan-days {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.essensplan-day-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    transition: box-shadow 0.2s ease;
+}
+
+.essensplan-day-card.today {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 1px var(--primary-light);
+}
+
+.essensplan-day-header {
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.2s;
+    font-family: inherit;
+}
+
+.essensplan-day-header:hover {
+    background: var(--bg-warm);
+}
+
+.essensplan-day-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 90px;
+}
+
+.today-badge {
+    background: var(--primary);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 10px;
+    letter-spacing: 0.3px;
+}
+
+.day-name {
+    font-weight: 700;
+    color: var(--text);
+    font-size: 0.95rem;
+}
+
+.day-preview {
+    flex: 1;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.day-arrow {
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+/* ─── Mahlzeiten ─────────────────────────────────────────────────────────────── */
+.essensplan-day-meals {
+    padding: 0 16px 14px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-top: 12px;
+    animation: fadeIn 0.15s ease-out;
+}
+
+.meal-row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.meal-type {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    min-width: 105px;
+}
+
+.meal-icon {
+    font-size: 1rem;
+}
+
+.meal-zeit {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.meal-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.meal-rezept {
+    color: var(--text);
+    font-size: 0.95rem;
+}
+
+.meal-zutaten {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.meal-empty {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 8px;
+    margin: 0;
+}
+
+/* ─── Desktop ────────────────────────────────────────────────────────────────── */
+@media (min-width: 1024px) {
+    .essensplan-days {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+}
+
+@media (min-width: 1400px) {
+    .essensplan-days {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}

@@ -1,0 +1,297 @@
+/* ─── Scan-Tabs ─────────────────────────────────────────────────────────────── */
+.scan-tabs {
+    display: flex;
+    gap: 6px;
+    background: var(--bg-warm);
+    padding: 6px;
+    border-radius: var(--radius-lg);
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+}
+
+.scan-tab {
+    flex: 1;
+    padding: 10px 6px;
+    border: none;
+    background: transparent;
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.scan-tab.active {
+    background: var(--bg-card);
+    color: var(--primary);
+    box-shadow: var(--shadow-sm);
+}
+
+.scan-tab:hover:not(.active) {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+/* ─── Tab Content ────────────────────────────────────────────────────────────── */
+.scan-tab-content {
+    animation: fadeIn 0.2s ease-out;
+}
+
+/* ─── Start-Bereich ──────────────────────────────────────────────────────────── */
+.scan-start-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 40px 20px;
+    gap: 16px;
+}
+
+.scan-big-icon {
+    font-size: 4rem;
+    line-height: 1;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+}
+
+.scan-hint-text {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    max-width: 320px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.scan-start-btn {
+    width: 100%;
+    max-width: 280px;
+    padding: 14px;
+    font-size: 1rem;
+}
+
+/* ─── KI-Hinweis ─────────────────────────────────────────────────────────────── */
+.scan-ki-hinweis {
+    padding: 20px;
+    text-align: center;
+}
+
+.scan-ki-hinweis p {
+    margin: 0 0 8px 0;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+.scan-ki-hinweis strong {
+    color: var(--primary);
+}
+
+/* ─── KI Loading ─────────────────────────────────────────────────────────────── */
+.scan-ki-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px 20px;
+    gap: 16px;
+}
+
+.scan-ki-spinner {
+    font-size: 3rem;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.7; }
+}
+
+.scan-ki-loading p {
+    margin: 0;
+    color: var(--text);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.scan-ki-sub {
+    color: var(--text-muted) !important;
+    font-size: 0.85rem !important;
+    font-weight: 400 !important;
+}
+
+/* ─── Barcode Ergebnis ───────────────────────────────────────────────────────── */
+.scan-result-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px;
+    gap: 16px;
+    color: var(--text-secondary);
+}
+
+.scan-result-found {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--success-light);
+    border-radius: var(--radius-md);
+    margin-bottom: 4px;
+}
+
+.scan-result-found strong {
+    font-size: 1.05rem;
+    color: var(--text);
+}
+
+.scan-brand {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.scan-result-icon {
+    font-size: 1.5rem;
+}
+
+.scan-result-notfound {
+    text-align: center;
+    padding: 20px;
+    color: var(--text-secondary);
+}
+
+.scan-result-notfound span {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.scan-result-notfound code {
+    background: var(--bg-warm);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+/* ─── Bulk Review ────────────────────────────────────────────────────────────── */
+.bulk-review {
+    animation: fadeIn 0.2s ease-out;
+}
+
+.bulk-review h3 {
+    font-size: 1.3rem;
+    margin-bottom: 4px;
+}
+
+.bulk-subtitle {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 16px;
+}
+
+.bulk-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.bulk-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 12px 16px;
+    transition: all 0.2s ease;
+}
+
+.bulk-item-unchecked {
+    opacity: 0.45;
+}
+
+.bulk-item-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    margin-bottom: 8px;
+}
+
+.bulk-item-label:last-child {
+    margin-bottom: 0;
+}
+
+.bulk-checkbox {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.bulk-name {
+    font-weight: 600;
+    color: var(--text);
+    flex: 1;
+}
+
+.bulk-menge {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    background: var(--bg-warm);
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
+.bulk-kat-select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+    background: var(--bg-warm);
+    color: var(--text-secondary);
+}
+
+.bulk-actions {
+    display: flex;
+    gap: 12px;
+    position: sticky;
+    bottom: 80px;
+    background: var(--bg-main);
+    padding: 12px 0 4px;
+}
+
+.bulk-actions .btn {
+    flex: 1;
+}
+
+/* ─── Bon-Info ───────────────────────────────────────────────────────────────── */
+.bon-info {
+    background: var(--accent-light);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-md);
+    padding: 10px 16px;
+    margin-bottom: 16px;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+/* ─── Manual Form ────────────────────────────────────────────────────────────── */
+.manual-form h3 {
+    margin-bottom: 16px;
+}
+
+/* ─── Desktop ────────────────────────────────────────────────────────────────── */
+@media (min-width: 768px) {
+    .scan-start-area {
+        padding: 60px 40px;
+    }
+
+    .bulk-actions {
+        position: static;
+        padding: 0;
+        margin-top: 16px;
+    }
+}

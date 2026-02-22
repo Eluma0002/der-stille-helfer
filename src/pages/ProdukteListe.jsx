@@ -742,8 +742,8 @@ const ProdukteListe = () => {
                                     style={{ borderLeftColor: cat.color, background: `rgba(${rgb}, 0.04)` }}
                                 >
                                     <div className="kategorie-header">
-                                        <span className="kategorie-icon" style={{ color: cat.color }}>{cat.icon}</span>
-                                        <span className="kategorie-name" style={{ color: cat.color }}>{cat.name}</span>
+                                        <span className="kategorie-icon" style={{ backgroundColor: cat.color }}>{cat.icon}</span>
+                                        <span className="kategorie-name">{cat.name}</span>
                                         <span className="kategorie-badge" style={{ background: cat.color }}>{items.length}</span>
                                     </div>
                                     {items.length === 0 ? (

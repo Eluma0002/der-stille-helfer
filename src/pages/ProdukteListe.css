@@ -267,14 +267,14 @@
     .produkt-list-item .produkt-card-delete { opacity: 0.4; }
 }
 
-/* ── Kategorien ─────────────────────────────────── */
+/* ── Kategorien (wie Home-Vorrat) ───────────────── */
 .kategorie-sections { margin-top: 8px; }
 
 .kategorie-section {
-    margin-bottom: 18px;
+    margin-bottom: 14px;
     border-left: 4px solid transparent;
     border-radius: 0 var(--radius-md) var(--radius-md) 0;
-    padding: 10px 10px 4px 12px;
+    padding: 10px 10px 12px 12px;
 }
 
 .kategorie-header {
@@ -284,13 +284,22 @@
     margin-bottom: 10px;
 }
 
+/* Badge wie Home (farbiger Hintergrund) */
 .kategorie-icon {
-    font-size: 1.3rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    font-size: 1rem;
+    flex-shrink: 0;
 }
 
 .kategorie-name {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 700;
+    color: var(--text);
     flex: 1;
 }
 
@@ -298,7 +307,7 @@
     font-size: 0.72rem;
     font-weight: 700;
     color: white;
-    padding: 2px 10px;
+    padding: 2px 9px;
     border-radius: 12px;
     min-width: 24px;
     text-align: center;
@@ -312,21 +321,21 @@
     margin: 0;
 }
 
-/* ── Mehrzeiliges Grid ──────────────────────────── */
+/* ── Kompaktes Grid wie Home ─────────────────────── */
 .kategorie-scroll {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-    gap: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+    gap: 8px;
     padding: 4px 0 8px 0;
 }
 
-/* ── Produktkarte ───────────────────────────────── */
+/* ── Produktkarte (kompakt wie Home storage-item) ─ */
 .produkt-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-top: 3px solid transparent;
+    border-top: 2px solid transparent;
     border-radius: var(--radius-md);
-    padding: 12px 10px 10px;
+    padding: 10px 6px 8px;
     position: relative;
     transition: box-shadow 0.2s ease;
     box-shadow: var(--shadow-sm);
@@ -334,34 +343,37 @@
     flex-direction: column;
     align-items: center;
     text-align: center;
-    gap: 8px;
+    gap: 4px;
+    cursor: pointer;
+    min-width: 0;
 }
 
 .produkt-card:hover { box-shadow: var(--shadow-md); }
 
 .produkt-card-icon {
-    font-size: 2.2rem;
+    font-size: 1.8rem;
     line-height: 1;
 }
 
 .produkt-card-info {
     display: flex;
     flex-direction: column;
-    gap: 3px;
+    gap: 2px;
     width: 100%;
 }
 
 .produkt-card-name {
-    font-size: 0.82rem;
+    font-size: 0.68rem;
     font-weight: 600;
     color: var(--text);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    max-width: 100%;
 }
 
 .produkt-card-expiry {
-    font-size: 0.72rem;
+    font-size: 0.6rem;
     font-weight: 500;
 }
 
@@ -373,22 +385,23 @@
 
 .produkt-card-delete {
     position: absolute;
-    top: 4px;
-    right: 4px;
+    top: 2px;
+    right: 2px;
     background: none;
     border: none;
-    font-size: 1rem;
+    font-size: 0.9rem;
     cursor: pointer;
     opacity: 0;
     transition: opacity 0.15s;
-    width: 22px;
-    height: 22px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
     color: var(--text-muted);
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 0;
+    line-height: 1;
 }
 
 .produkt-card:hover .produkt-card-delete { opacity: 0.55; }
@@ -649,23 +662,17 @@
 
 /* ── Responsive ─────────────────────────────────── */
 @media (max-width: 360px) {
-    .kategorie-scroll {
-        grid-template-columns: repeat(auto-fill, minmax(95px, 1fr));
-    }
-    .produkt-card { padding: 10px 8px; }
-    .produkt-card-icon { font-size: 1.8rem; }
+    .kategorie-scroll { grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); }
+    .produkt-card { padding: 8px 4px; }
+    .produkt-card-icon { font-size: 1.5rem; }
 }
 
 @media (min-width: 480px) {
-    .kategorie-scroll {
-        grid-template-columns: repeat(auto-fill, minmax(125px, 1fr));
-    }
+    .kategorie-scroll { grid-template-columns: repeat(auto-fill, minmax(82px, 1fr)); }
 }
 
 @media (min-width: 768px) {
-    .kategorie-scroll {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    }
+    .kategorie-scroll { grid-template-columns: repeat(auto-fill, minmax(95px, 1fr)); }
 }
 
 /* ── Neue Eingabe-Methoden: Sprache & Zettel ─────────────────────────────── */

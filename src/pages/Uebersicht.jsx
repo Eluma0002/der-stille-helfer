@@ -217,39 +217,65 @@ const Uebersicht = () => {
                 </div>
             </section>
 
-            {/* 3. Quick Actions */}
+            {/* 3. Quick Actions – Fernbedienung (2-Spalten, 8 Buttons) */}
             <div className="quick-actions">
-                <button
-                    className="action-btn"
-                    onClick={() => window.location.hash = '#/produkte'}
-                >
+                <button className="action-btn" onClick={() => window.location.hash = '#/koch-assistent'}>
+                    <span className="action-icon">🍳</span>
+                    <span className="action-label">Koch-AI</span>
+                </button>
+                <button className="action-btn" onClick={() => window.location.hash = '#/produkte'}>
                     <span className="action-icon">🧊</span>
                     <span className="action-label">Inventar</span>
                 </button>
-                <button
-                    className="action-btn"
-                    onClick={() => window.location.hash = '#/koch-assistent'}
-                >
-                    <span className="action-icon">🤖</span>
-                    <span className="action-label">Koch-AI</span>
-                </button>
-                <button
-                    className="action-btn"
-                    onClick={() => window.location.hash = '#/rezepte'}
-                >
+                <button className="action-btn" onClick={() => window.location.hash = '#/rezepte'}>
                     <span className="action-icon">📖</span>
                     <span className="action-label">Rezepte</span>
                 </button>
-                <button
-                    className="action-btn"
-                    onClick={() => window.location.hash = '#/einkauf'}
-                >
+                <button className="action-btn" onClick={() => window.location.hash = '#/einkauf'}>
                     <span className="action-icon">🛒</span>
                     <span className="action-label">Einkauf</span>
                 </button>
+                <button className="action-btn" onClick={() => window.location.hash = '#/wochenplan'}>
+                    <span className="action-icon">📅</span>
+                    <span className="action-label">Wochenplan</span>
+                </button>
+                <button className="action-btn" onClick={() => window.location.hash = '#/produkte'}>
+                    <span className="action-icon">➕</span>
+                    <span className="action-label">Eintragen</span>
+                </button>
+                <button className="action-btn" onClick={() => window.location.hash = '#/produkte'}>
+                    <span className="action-icon">🔍</span>
+                    <span className="action-label">Suchen</span>
+                </button>
+                <button className="action-btn" onClick={() => window.location.hash = '#/teilen'}>
+                    <span className="action-icon">🤝</span>
+                    <span className="action-label">Teilen</span>
+                </button>
             </div>
 
-            {/* 4. Vorrat-Überblick – kompaktes Grid */}
+            {/* 4. Expiring Soon Alert – VOR Dein Vorrat */}
+            {expiringProducts.length > 0 && (
+                <div className="card alert-card">
+                    <h3>&#x26A0;&#xFE0F; Bald ablaufend</h3>
+                    <div className="expiring-list">
+                        {expiringProducts.map(p => {
+                            const label = getExpiryLabel(p.ablauf);
+                            const isExpired = label === 'abgelaufen';
+                            return (
+                                <div key={p.id} className="expiring-item">
+                                    <ProductIcon productName={p.name} size="medium" />
+                                    <span className="item-name">{p.name}</span>
+                                    <span className={`item-date ${isExpired ? 'expired' : ''}`}>
+                                        {label}
+                                    </span>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
+
+            {/* 5. Vorrat-Überblick – kompaktes Grid */}
             <section className="storage-section">
                 <div className="storage-section-header">
                     <h3 className="section-title">Dein Vorrat</h3>
@@ -301,28 +327,6 @@ const Uebersicht = () => {
                     </div>
                 )}
             </section>
-
-            {/* 5. Expiring Soon Alert */}
-            {expiringProducts.length > 0 && (
-                <div className="card alert-card">
-                    <h3>&#x26A0;&#xFE0F; Bald ablaufend</h3>
-                    <div className="expiring-list">
-                        {expiringProducts.map(p => {
-                            const label = getExpiryLabel(p.ablauf);
-                            const isExpired = label === 'abgelaufen';
-                            return (
-                                <div key={p.id} className="expiring-item">
-                                    <ProductIcon productName={p.name} size="medium" />
-                                    <span className="item-name">{p.name}</span>
-                                    <span className={`item-date ${isExpired ? 'expired' : ''}`}>
-                                        {label}
-                                    </span>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </div>
-            )}
 
             {/* 6. Quick Shopping List */}
             {uncheckedItems.length > 0 && (

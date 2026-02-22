@@ -25,48 +25,35 @@ export default function Layout({ children }) {
     return (
         <div className="fridge-app">
             <header>
-                <h1>Der Stille Helfer</h1>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <h1>Cukina</h1>
+                <nav>
+                    {NAV_ITEMS.map(item => (
+                        <Link
+                            key={item.path}
+                            to={item.path}
+                            className={location.pathname === item.path ? 'active' : ''}
+                        >
+                            <span>{item.icon}</span>
+                            <span className="nav-label">{item.label}</span>
+                        </Link>
+                    ))}
+                </nav>
+                <div className="header-controls">
                     <button
                         onClick={cycle}
                         title={`Design: ${label}`}
-                        style={{
-                            background: 'rgba(255,255,255,0.18)',
-                            border: 'none',
-                            borderRadius: '8px',
-                            padding: '5px 9px',
-                            cursor: 'pointer',
-                            fontSize: '1.1rem',
-                            lineHeight: 1,
-                            color: 'white',
-                        }}
+                        className="header-btn"
                     >{icon}</button>
                     <Link
                         to="/einstellungen"
-                        style={{
-                            fontSize: '1.3rem',
-                            textDecoration: 'none',
-                            opacity: location.pathname === '/einstellungen' ? 1 : 0.75,
-                            lineHeight: 1,
-                        }}
+                        className="header-btn"
                         title="Einstellungen"
+                        style={{ opacity: location.pathname === '/einstellungen' ? 1 : 0.75 }}
                     >⚙️</Link>
                     <UserSwitcher />
                 </div>
             </header>
             <main>{children}</main>
-            <nav>
-                {NAV_ITEMS.map(item => (
-                    <Link
-                        key={item.path}
-                        to={item.path}
-                        className={location.pathname === item.path ? 'active' : ''}
-                    >
-                        <span>{item.icon}</span>
-                        <span className="nav-label">{item.label}</span>
-                    </Link>
-                ))}
-            </nav>
         </div>
     );
 }

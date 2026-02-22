@@ -8,6 +8,16 @@ import './Einstellungen.css';
 
 const EMPTY_ALLERGY_PROFILE = { forbidden: [], allowed: [], excluded: [], substitutions: {} };
 
+// Stellt sicher dass das Allergieprofil vollständig ist
+function safeAllergyProfile(profile) {
+    return {
+        forbidden: Array.isArray(profile?.forbidden) ? profile.forbidden : [],
+        allowed: Array.isArray(profile?.allowed) ? profile.allowed : [],
+        excluded: Array.isArray(profile?.excluded) ? profile.excluded : [],
+        substitutions: (profile?.substitutions && typeof profile.substitutions === 'object') ? profile.substitutions : {},
+    };
+}
+
 const Einstellungen = () => {
     const { activeUser, activeUserId, switchUser, users } = useUser();
     const [profile, setProfile] = useState(null);
@@ -48,10 +58,10 @@ const Einstellungen = () => {
                         name: existing.name || activeUser?.name || '',
                         preferences: existing.preferences || ''
                     });
-                    setAllergyProfile(existing.allergyProfile || EMPTY_ALLERGY_PROFILE);
+                    setAllergyProfile(safeAllergyProfile(existing.allergyProfile));
                 } else {
                     setFormData({ name: activeUser?.name || '', preferences: '' });
-                    setAllergyProfile(activeUserId === 'elvis' ? ELVIS_PROFILE : EMPTY_ALLERGY_PROFILE);
+                    setAllergyProfile(safeAllergyProfile(activeUserId === 'elvis' ? ELVIS_PROFILE : EMPTY_ALLERGY_PROFILE));
                 }
             } catch (err) {
                 setError('Fehler beim Laden des Profils');
