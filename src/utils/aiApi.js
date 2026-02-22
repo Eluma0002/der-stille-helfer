@@ -26,7 +26,7 @@ export const AI_PROVIDERS = {
     },
 };
 
-function buildSystemPrompt({ produkte, profile }) {
+function buildSystemPrompt({ produkte, profile, kochProfil }) {
     const inventar = produkte?.length > 0
         ? produkte.map(p => p.name).join(', ')
         : 'Kein Inventar erfasst';
@@ -39,16 +39,59 @@ function buildSystemPrompt({ produkte, profile }) {
         ? ` (erlaubt trotzdem: ${profile.allergyProfile.allowed.join(', ')})`
         : '';
 
-    return `Du bist "KI-Koch", ein freundlicher Koch-Assistent in der App "Der Stille Helfer".
+    const profilText = kochProfil || 'Keine speziellen Einschränkungen';
+
+    return `Du bist "Chef Aivo", ein kreativer, freundlicher Koch-Assistent in der App "Cellara".
 Antworte immer auf Deutsch. Sei kurz, praktisch und ermutigend.
 
 Inventar des Nutzers: ${inventar}
 Allergien/Unverträglichkeiten: ${verboten}${erlaubt}
+Koch-Profil des Nutzers: ${profilText}
 
-Hilf beim: Rezeptvorschläge (nur mit vorhandenen Zutaten), Kochtipps, Zutaten ersetzen, Fragen rund ums Kochen.`;
+Halte dich STRIKT an das Koch-Profil. Schlage niemals Rezepte vor, die dagegen verstossen.
+Hilf beim: Rezeptvorschläge, Kochtipps, Zutaten ersetzen, Fragen rund ums Kochen.`;
 }
 
-async function callOpenAI(url, model, apiKey, messages) {
+// ── Rezept-Generator Prompt ────────────────────────────────────────────────
+
+function buildRezeptGeneratorPrompt({ produkte, kochProfil, anzahl = 4 }) {
+    const inventar = produkte?.length > 0
+        ? produkte.map(p => p.name).join(', ')
+        : 'unbekannt';
+
+    return `Du bist Chef Aivo, ein kreativer Koch. Erstelle ${anzahl} verschiedene, kreative Rezepte auf Deutsch.
+
+Vorrat des Nutzers: ${inventar}
+Koch-Profil: ${kochProfil || 'Keine Einschränkungen'}
+
+WICHTIG: Halte dich STRIKT an das Koch-Profil. Nie dagegen verstossen.
+Nutze wenn möglich Zutaten aus dem Vorrat, darf aber auch andere Zutaten vorschlagen.
+Rezepte sollen kreativ, lecker und realistisch kochbar sein.
+
+Antworte NUR mit validem JSON, kein Text davor oder danach:
+{
+  "rezepte": [
+    {
+      "name": "Rezeptname",
+      "beschreibung": "Kurze appetitliche Beschreibung (1-2 Sätze)",
+      "zutaten": [
+        {"name": "Zutat", "menge": "200g"}
+      ],
+      "anleitung": "1. Schritt\\n2. Schritt\\n3. Schritt",
+      "zeit": 30,
+      "portionen": 2,
+      "mahlzeit": "mittag",
+      "tags": ["kreativ", "mediterran"],
+      "schwierigkeit": "einfach"
+    }
+  ]
+}
+
+mahlzeit ist eines von: fruehstueck, mittag, abend, snack
+schwierigkeit ist eines von: einfach, mittel, schwer`;
+}
+
+async function callOpenAI(url, model, apiKey, messages, maxTokens = 600) {
     const res = await fetch(url, {
         method: 'POST',
         headers: {
@@ -56,7 +99,7 @@ async function callOpenAI(url, model, apiKey, messages) {
             'Content-Type': 'application/json',
             'HTTP-Referer': window.location.origin,
         },
-        body: JSON.stringify({ model, messages, max_tokens: 600, temperature: 0.7 }),
+        body: JSON.stringify({ model, messages, max_tokens: maxTokens, temperature: 0.7 }),
     });
     if (!res.ok) {
         const err = await res.json().catch(() => ({}));
@@ -91,7 +134,7 @@ async function callGemini(apiKey, messages) {
 
 export async function askAI({ provider, apiKey, question, history = [], context = {} }) {
     const cfg = AI_PROVIDERS[provider];
-    if (!cfg)          throw new Error(`Unbekannter Anbieter: ${provider}`);
+    if (!cfg)            throw new Error(`Unbekannter Anbieter: ${provider}`);
     if (!apiKey?.trim()) throw new Error('Kein API-Key – bitte in den Einstellungen eintragen.');
 
     const messages = [
@@ -102,4 +145,37 @@ export async function askAI({ provider, apiKey, question, history = [], context 
 
     if (cfg.format === 'gemini') return callGemini(apiKey, messages);
     return callOpenAI(cfg.url, cfg.model, apiKey, messages);
+}
+
+/**
+ * Chef Aivo holt frische KI-Rezepte (JSON-Format)
+ * Gibt Array von Rezept-Objekten zurück
+ */
+export async function askAivoForRecipes({ provider, apiKey, produkte, kochProfil, anzahl = 4 }) {
+    const cfg = AI_PROVIDERS[provider];
+    if (!cfg)            throw new Error(`Unbekannter Anbieter: ${provider}`);
+    if (!apiKey?.trim()) throw new Error('Kein API-Key – bitte in den Einstellungen eintragen.');
+
+    const prompt = buildRezeptGeneratorPrompt({ produkte, kochProfil, anzahl });
+    const messages = [
+        { role: 'system', content: 'Du bist ein Koch-Assistent. Antworte NUR mit validem JSON.' },
+        { role: 'user',   content: prompt },
+    ];
+
+    let rawText;
+    if (cfg.format === 'gemini') {
+        rawText = await callGemini(apiKey, messages);
+    } else {
+        // Höheres Token-Limit für Rezepte
+        rawText = await callOpenAI(cfg.url, cfg.model, apiKey, messages, 2000);
+    }
+
+    // JSON extrahieren (manchmal kommt Markdown ```json ... ``` darum)
+    const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('KI hat kein gültiges JSON zurückgegeben. Bitte nochmal versuchen.');
+
+    const parsed = JSON.parse(jsonMatch[0]);
+    if (!Array.isArray(parsed.rezepte)) throw new Error('Unerwartetes Format von Chef Aivo.');
+
+    return parsed.rezepte;
 }

@@ -72,15 +72,52 @@ const emptyForm = {
     haltbar_bis: '', ort: '', behaelter: 'Keiner', notizen: ''
 };
 
+const ERKLAER_STEPS = [
+    {
+        icon: '🥕',
+        title: 'Was ist Teilen?',
+        text: 'Du hast Lebensmittel, die du nicht mehr brauchst oder die bald ablaufen? Biete sie deinen Nachbarn an – statt sie wegzuwerfen.',
+    },
+    {
+        icon: '📍',
+        title: 'Wie funktioniert die Übergabe?',
+        text: 'Du bestimmst den Übergabeort selbst – zum Beispiel dein Briefkasten, die Haustür oder ein neutraler Treffpunkt. Keine Adresse nötig.',
+    },
+    {
+        icon: '🔒',
+        title: 'Datenschutz & Sicherheit',
+        text: 'Alles bleibt auf deinem Gerät. Keine Daten werden an Server gesendet. Du gibst nur so viel preis wie du möchtest.',
+    },
+    {
+        icon: '📦',
+        title: 'Behälter & Rückgabe',
+        text: 'Gibst du etwas in einem Tupper oder Glas weiter? Du kannst die Rückgabe verfolgen und bestätigen wenn der Behälter zurück ist.',
+    },
+    {
+        icon: '⏰',
+        title: 'Bald ablaufend?',
+        text: 'Cellara zeigt dir automatisch, welche Produkte bald ablaufen. Ein Tipp – und du kannst sie direkt zum Teilen anbieten.',
+    },
+];
+
 const TeilenSeite = () => {
     const { activeUserId } = useUser();
 
+    const [erklaerOpen, setErklaerOpen] = useState(
+        () => localStorage.getItem('teilen_erklaer_open') !== 'false'
+    );
     const [items, setItems] = useState(() => {
         try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
         catch { return []; }
     });
     const [showForm, setShowForm] = useState(false);
     const [form, setForm]         = useState({ ...emptyForm });
+
+    const toggleErklaer = () => {
+        const next = !erklaerOpen;
+        setErklaerOpen(next);
+        localStorage.setItem('teilen_erklaer_open', String(next));
+    };
 
     // Bald ablaufende Produkte aus dem Inventar (≤ 3 Tage)
     const expiringProdukte = useLiveQuery(async () => {
@@ -169,6 +206,32 @@ const TeilenSeite = () => {
                 <div className="teilen-privacy-hint">
                     🔒 Kein Pflichtfeld für Adresse – nutze einen neutralen Übergabeort wie den Briefkasten
                 </div>
+            </div>
+
+            {/* ── Erklär-Banner (klappbar) ─────────────── */}
+            <div className="teilen-erklaer">
+                <button className="teilen-erklaer-toggle" onClick={toggleErklaer}>
+                    <span>💡 Was ist Teilen? Wie funktioniert es?</span>
+                    <span className={`teilen-erklaer-chevron${erklaerOpen ? ' open' : ''}`}>▼</span>
+                </button>
+                {erklaerOpen && (
+                    <div className="teilen-erklaer-body">
+                        <div className="teilen-erklaer-steps">
+                            {ERKLAER_STEPS.map((step, i) => (
+                                <div key={i} className="teilen-erklaer-step">
+                                    <div className="teilen-erklaer-icon">{step.icon}</div>
+                                    <div>
+                                        <div className="teilen-erklaer-step-title">{step.title}</div>
+                                        <div className="teilen-erklaer-step-text">{step.text}</div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <button className="teilen-erklaer-close" onClick={toggleErklaer}>
+                            Verstanden – Anleitung ausblenden ✕
+                        </button>
+                    </div>
+                )}
             </div>
 
             {/* ── Anbieten-Button ──────────────────────── */}

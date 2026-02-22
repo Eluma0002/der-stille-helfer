@@ -243,9 +243,9 @@ const Uebersicht = () => {
                     <span className="action-icon">➕</span>
                     <span className="action-label">Eintragen</span>
                 </button>
-                <button className="action-btn" onClick={() => window.location.hash = '#/produkte'}>
-                    <span className="action-icon">🔍</span>
-                    <span className="action-label">Suchen</span>
+                <button className="action-btn" onClick={() => window.location.hash = '#/unterwegs'}>
+                    <span className="action-icon">🚶</span>
+                    <span className="action-label">Unterwegs</span>
                 </button>
                 <button className="action-btn" onClick={() => window.location.hash = '#/teilen'}>
                     <span className="action-icon">🤝</span>
@@ -279,13 +279,11 @@ const Uebersicht = () => {
             <section className="storage-section">
                 <div className="storage-section-header">
                     <h3 className="section-title">Dein Vorrat</h3>
-                    <Link to="/produkte" className="storage-see-all">Alle anzeigen →</Link>
+                    <Link to="/produkte" className="storage-see-all">Verwalten →</Link>
                 </div>
                 {DEFAULT_CATEGORIES.map(cat => {
                     const items = groupedProducts[cat.id] || [];
                     if (items.length === 0) return null;
-                    const visible  = items.slice(0, 8);
-                    const overflow = items.length - 8;
                     return (
                         <div
                             key={cat.id}
@@ -302,18 +300,12 @@ const Uebersicht = () => {
                                 </span>
                             </div>
                             <div className="storage-items-grid">
-                                {visible.map(p => (
+                                {items.map(p => (
                                     <Link key={p.id} to="/produkte" className="storage-item">
                                         <ProductIcon productName={p.name} size="medium" />
                                         <span className="storage-item-name">{p.name}</span>
                                     </Link>
                                 ))}
-                                {overflow > 0 && (
-                                    <Link to="/produkte" className="storage-item storage-item-more">
-                                        <span className="storage-more-count">+{overflow}</span>
-                                        <span className="storage-item-name">mehr</span>
-                                    </Link>
-                                )}
                             </div>
                         </div>
                     );

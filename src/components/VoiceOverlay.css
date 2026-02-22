@@ -1,0 +1,421 @@
+/* ===== VoiceOverlay – globale Sprachsteuerung ===== */
+
+/* ── Root Container ────────────────────────────────────────
+   Positioniert relativ zur Header-Navigation (via Layout.jsx).
+   Kein fixed positioning nötig – wird im Header-Controls-Bereich gerendert.
+*/
+.vo-root {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* ── Buttons ─────────────────────────────────────────────── */
+.vo-buttons {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.vo-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+/* Quick-Switch Button */
+.vo-btn.switch {
+    background: rgba(255,255,255,0.2);
+    color: white;
+}
+
+.vo-btn.switch:hover,
+.vo-btn.switch.open {
+    background: rgba(255,255,255,0.35);
+    transform: scale(1.05);
+}
+
+/* Mic Button */
+.vo-btn.mic {
+    background: rgba(255,255,255,0.2);
+    color: white;
+}
+
+.vo-btn.mic:hover {
+    background: rgba(255,255,255,0.35);
+    transform: scale(1.05);
+}
+
+.vo-btn.mic.listening {
+    background: #ef4444;
+    animation: micBeat 1s ease-in-out infinite;
+}
+
+.vo-btn.mic.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+@keyframes micBeat {
+    0%, 100% { transform: scale(1); }
+    50%       { transform: scale(1.08); }
+}
+
+/* Puls-Ring beim Zuhören */
+.vo-pulse {
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    border: 2px solid rgba(239,68,68,0.6);
+    animation: pulsRing 1.2s ease-out infinite;
+    pointer-events: none;
+}
+
+@keyframes pulsRing {
+    0%   { transform: scale(1);   opacity: 0.8; }
+    100% { transform: scale(1.6); opacity: 0; }
+}
+
+/* ── Feedback-Blase ─────────────────────────────────────── */
+.vo-feedback {
+    position: fixed;
+    bottom: calc(var(--nav-height, 80px) + 1rem);
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: min(90vw, 380px);
+    padding: 0.6rem 1.1rem;
+    border-radius: var(--radius-xl, 24px);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-align: center;
+    z-index: 9999;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+    animation: feedbackIn 0.25s ease;
+    pointer-events: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@keyframes feedbackIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(10px) scale(0.95); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0)    scale(1);    }
+}
+
+.vo-feedback-ok {
+    background: #1d4ed8;
+    color: white;
+}
+
+.vo-feedback-nav {
+    background: var(--secondary, #27AE60);
+    color: white;
+}
+
+.vo-feedback-query {
+    background: #7c3aed;
+    color: white;
+}
+
+.vo-feedback-error {
+    background: var(--danger, #E74C3C);
+    color: white;
+}
+
+.vo-interim {
+    font-style: italic;
+    opacity: 0.9;
+}
+
+/* ── Schnell-Menu ────────────────────────────────────────── */
+.vo-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    background: white;
+    border-radius: var(--radius-lg, 16px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    min-width: 200px;
+    overflow: hidden;
+    z-index: 5000;
+    animation: menuIn 0.2s ease;
+}
+
+@keyframes menuIn {
+    from { opacity: 0; transform: translateY(-8px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+
+.vo-menu-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.65rem 0.9rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted, #A39E97);
+    border-bottom: 1px solid var(--border, #F0ECE4);
+}
+
+.vo-menu-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-muted, #A39E97);
+    font-size: 0.9rem;
+    padding: 0.1rem 0.3rem;
+}
+
+.vo-quick-links {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border, #F0ECE4);
+    padding: 4px;
+    gap: 4px;
+}
+
+.vo-quick-link {
+    background: white;
+    border: none;
+    padding: 0.6rem 0.5rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text, #2D2A26);
+    cursor: pointer;
+    border-radius: var(--radius-sm, 8px);
+    text-align: left;
+    transition: background 0.15s;
+}
+
+.vo-quick-link:hover {
+    background: var(--bg-warm, #FFF8F2);
+    color: var(--primary, #E8743B);
+}
+
+.vo-menu-footer {
+    padding: 0.5rem;
+    border-top: 1px solid var(--border, #F0ECE4);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.vo-guide-btn {
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 0.5rem 0.4rem;
+    font-size: 0.78rem;
+    color: #6366f1;
+    cursor: pointer;
+    text-align: left;
+    border-radius: var(--radius-sm, 8px);
+    transition: background 0.15s;
+    font-weight: 600;
+}
+
+.vo-guide-btn:hover {
+    background: #ede9fe;
+}
+
+.vo-toggle-btn {
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 0.5rem 0.4rem;
+    font-size: 0.78rem;
+    color: var(--text-muted, #A39E97);
+    cursor: pointer;
+    text-align: left;
+    border-radius: var(--radius-sm, 8px);
+    transition: background 0.15s;
+}
+
+.vo-toggle-btn:hover {
+    background: var(--danger-light, #FDEDEC);
+    color: var(--danger, #E74C3C);
+}
+
+.vo-no-support {
+    padding: 0.5rem 0.9rem;
+    font-size: 0.78rem;
+    color: var(--warning, #F39C12);
+    background: var(--warning-light, #FEF5E7);
+}
+
+/* ── Deaktiviert-Hint ────────────────────────────────────── */
+.vo-disabled-hint {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    cursor: pointer;
+    opacity: 0.45;
+    transition: opacity 0.2s;
+    color: white;
+    border: none;
+}
+
+.vo-disabled-hint:hover {
+    opacity: 0.8;
+}
+
+/* ── Hold-Modus (Freihändig) ─────────────────────────────── */
+.vo-btn.mic.hold {
+    background: #7c3aed !important;
+    animation: micBeat 0.8s ease-in-out infinite;
+}
+
+/* ── Sprach-Anleitung Modal ──────────────────────────────── */
+.vo-guide-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 10000;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    animation: guideOverlayIn 0.2s ease;
+}
+
+@keyframes guideOverlayIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.vo-guide-modal {
+    background: #fff;
+    border-radius: 1.25rem 1.25rem 0 0;
+    width: 100%;
+    max-width: 480px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    animation: guideModalIn 0.25s ease;
+    overflow: hidden;
+}
+
+@keyframes guideModalIn {
+    from { transform: translateY(40px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+}
+
+.vo-guide-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.1rem 0.75rem;
+    border-bottom: 1px solid #f0ece4;
+    flex-shrink: 0;
+}
+
+.vo-guide-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #1a1a1a;
+}
+
+.vo-guide-close {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    color: #aaa;
+    cursor: pointer;
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.375rem;
+}
+
+.vo-guide-close:hover {
+    background: #f3f4f6;
+    color: #555;
+}
+
+.vo-guide-body {
+    overflow-y: auto;
+    flex: 1;
+    padding: 0.75rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.vo-guide-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.vo-guide-section-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #888;
+    margin-bottom: 0.15rem;
+}
+
+.vo-guide-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    padding: 0.4rem 0.6rem;
+    background: #f9fafb;
+    border-radius: 0.5rem;
+    border-left: 3px solid #6366f1;
+}
+
+.vo-guide-cmd {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+.vo-guide-example {
+    font-size: 0.78rem;
+    color: #777;
+    font-style: italic;
+}
+
+.vo-guide-footer {
+    padding: 0.75rem 1rem;
+    border-top: 1px solid #f0ece4;
+    flex-shrink: 0;
+}
+
+.vo-guide-close-btn {
+    width: 100%;
+    padding: 0.7rem;
+    background: #6366f1;
+    color: #fff;
+    border: none;
+    border-radius: 0.75rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* ── Mobile Anpassungen ──────────────────────────────────── */
+@media (max-width: 400px) {
+    .vo-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
+    }
+}

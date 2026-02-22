@@ -1,0 +1,195 @@
+/* ===== KochProfil – Einstellungen für Chef Aivo & Luigi ===== */
+
+.kochprofil {
+    border-radius: var(--radius-lg);
+    border: 1.5px solid var(--border);
+    margin-bottom: 0.75rem;
+    overflow: hidden;
+    background: var(--bg-card);
+}
+
+/* ── Accent-Varianten ── */
+.kochprofil-aivo  { border-color: #93c5fd; }
+.kochprofil-luigi { border-color: #86efac; }
+
+/* ── Toggle-Button ── */
+.kp-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+}
+
+.kochprofil-aivo  .kp-toggle { background: #eff6ff; }
+.kochprofil-luigi .kp-toggle { background: #f0fdf4; }
+
+.kp-toggle-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.kp-toggle-name {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.kp-toggle-hint {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.kp-chevron {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+}
+
+.kp-chevron.open { transform: rotate(180deg); }
+
+/* ── Body ── */
+.kp-body {
+    padding: 0.75rem 1rem 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    border-top: 1px solid var(--border);
+}
+
+/* ── Sections ── */
+.kp-section-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+}
+
+/* ── Chips ── */
+.kp-toggles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-bottom: 0.25rem;
+}
+
+.kp-chip {
+    padding: 0.3rem 0.7rem;
+    border-radius: 99px;
+    border: 1.5px solid var(--border);
+    background: var(--bg-main);
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+}
+
+.kp-chip:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+/* Aivo aktiv */
+.kochprofil-aivo .kp-chip.active {
+    background: #1d4ed8;
+    border-color: #1d4ed8;
+    color: #fff;
+}
+
+/* Luigi aktiv */
+.kochprofil-luigi .kp-chip.active {
+    background: var(--secondary);
+    border-color: var(--secondary);
+    color: #fff;
+}
+
+/* ── Row / Col ── */
+.kp-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+
+.kp-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+/* ── Textarea ── */
+.kp-textarea {
+    width: 100%;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.6rem 0.75rem;
+    font-size: 0.83rem;
+    font-family: inherit;
+    background: var(--bg-main);
+    color: var(--text);
+    resize: none;
+    outline: none;
+    line-height: 1.5;
+    transition: border-color 0.15s;
+}
+
+.kp-textarea:focus {
+    border-color: var(--primary);
+}
+
+/* ── Footer ── */
+.kp-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border);
+    margin-top: 0.25rem;
+}
+
+.kp-reset {
+    background: none;
+    border: none;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0.25rem 0;
+    transition: color 0.15s;
+}
+
+.kp-reset:hover {
+    color: var(--danger);
+}
+
+.kp-close {
+    background: none;
+    border: none;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+    transition: background 0.15s;
+}
+
+.kp-close:hover {
+    background: var(--border);
+    color: var(--text);
+}
+
+/* ── Mobile ── */
+@media (max-width: 400px) {
+    .kp-row {
+        grid-template-columns: 1fr;
+    }
+}

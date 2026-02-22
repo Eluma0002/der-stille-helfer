@@ -4,15 +4,16 @@ import { useUser } from '../context/UserContext';
 import { useTheme } from '../hooks/useTheme';
 import WelcomeScreen from './WelcomeScreen';
 import UserSwitcher from './UserSwitcher';
+import VoiceOverlay from './VoiceOverlay';
 
 const NAV_ITEMS = [
-    { path: '/uebersicht',     icon: '🏠', label: 'Home'     },
-    { path: '/produkte',       icon: '🧊', label: 'Inventar' },
-    { path: '/rezepte',        icon: '📖', label: 'Rezepte'  },
-    { path: '/wochenplan',     icon: '📅', label: 'Plan'     },
-    { path: '/koch-assistent', icon: '🍳', label: 'Koch-AI'  },
-    { path: '/einkauf',        icon: '🛒', label: 'Einkauf'  },
-    { path: '/teilen',         icon: '🤝', label: 'Teilen'   },
+    { path: '/uebersicht',     icon: '🏠', label: 'Home'      },
+    { path: '/koch-assistent', icon: '🍳', label: 'Koch'      },
+    { path: '/rezepte',        icon: '📖', label: 'Rezepte'   },
+    { path: '/wochenplan',     icon: '📅', label: 'Plan'      },
+    { path: '/einkauf',        icon: '🛒', label: 'Einkauf'   },
+    { path: '/unterwegs',      icon: '🗺️', label: 'Unterwegs' },
+    { path: '/teilen',         icon: '🤝', label: 'Teilen'    },
 ];
 
 export default function Layout({ children }) {
@@ -25,35 +26,49 @@ export default function Layout({ children }) {
     return (
         <div className="fridge-app">
             <header>
-                <h1>Cellara</h1>
-                <nav>
-                    {NAV_ITEMS.map(item => (
-                        <Link
-                            key={item.path}
-                            to={item.path}
-                            className={location.pathname === item.path ? 'active' : ''}
-                        >
-                            <span>{item.icon}</span>
-                            <span className="nav-label">{item.label}</span>
-                        </Link>
-                    ))}
-                </nav>
-                <div className="header-controls">
+                <img src="/cellara-logo.png" className="header-logo" alt="Cellara" />
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <VoiceOverlay />
                     <button
                         onClick={cycle}
                         title={`Design: ${label}`}
-                        className="header-btn"
+                        style={{
+                            background: 'rgba(255,255,255,0.18)',
+                            border: 'none',
+                            borderRadius: '8px',
+                            padding: '5px 9px',
+                            cursor: 'pointer',
+                            fontSize: '1.1rem',
+                            lineHeight: 1,
+                            color: 'white',
+                        }}
                     >{icon}</button>
                     <Link
                         to="/einstellungen"
-                        className="header-btn"
+                        style={{
+                            fontSize: '1.3rem',
+                            textDecoration: 'none',
+                            opacity: location.pathname === '/einstellungen' ? 1 : 0.75,
+                            lineHeight: 1,
+                        }}
                         title="Einstellungen"
-                        style={{ opacity: location.pathname === '/einstellungen' ? 1 : 0.75 }}
                     >⚙️</Link>
                     <UserSwitcher />
                 </div>
             </header>
             <main>{children}</main>
+            <nav className="nav-bottom">
+                {NAV_ITEMS.map(item => (
+                    <Link
+                        key={item.path}
+                        to={item.path}
+                        className={location.pathname === item.path ? 'active' : ''}
+                    >
+                        <span>{item.icon}</span>
+                        <span className="nav-label">{item.label}</span>
+                    </Link>
+                ))}
+            </nav>
         </div>
     );
 }

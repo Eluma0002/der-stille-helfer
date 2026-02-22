@@ -11,8 +11,7 @@ import InstallBanner from './components/InstallBanner';
 import Uebersicht from './pages/Uebersicht';
 import ProdukteListe from './pages/ProdukteListe';
 import RezepteListe from './pages/RezepteListe';
-import KochAssistent from './pages/KochAssistent';
-import AlgoKoch from './pages/AlgoKoch';
+import Koch from './pages/Koch';
 import EinkaufsListe from './pages/EinkaufsListe';
 import FavoritenListe from './pages/FavoritenListe';
 import NotizenListe from './pages/NotizenListe';
@@ -21,6 +20,7 @@ import BackupExport from './pages/BackupExport';
 import RezeptDetails from './pages/RezeptDetails';
 import TeilenSeite from './pages/TeilenSeite';
 import Wochenplan from './pages/Wochenplan';
+import Unterwegs from './pages/Unterwegs';
 
 function NotificationWatcher() {
     const { activeUserId } = useUser();
@@ -64,7 +64,7 @@ function App() {
                         <Route path="/uebersicht"     element={<Uebersicht />} />
                         <Route path="/produkte"       element={<ProdukteListe />} />
                         <Route path="/rezepte"        element={<RezepteListe />} />
-                        <Route path="/koch-assistent" element={<AlgoKoch />} />
+                        <Route path="/koch-assistent" element={<Koch />} />
                         <Route path="/einkauf"        element={<EinkaufsListe />} />
                         <Route path="/wochenplan"     element={<Wochenplan />} />
                         <Route path="/favoriten"      element={<FavoritenListe />} />
@@ -72,6 +72,7 @@ function App() {
                         <Route path="/einstellungen"  element={<Einstellungen />} />
                         <Route path="/backup"         element={<BackupExport />} />
                         <Route path="/teilen"         element={<TeilenSeite />} />
+                        <Route path="/unterwegs"      element={<Unterwegs />} />
                         <Route path="/rezept/:id"     element={<RezeptDetails />} />
                         <Route path="/"               element={<Navigate to="/uebersicht" replace />} />
                     </Routes>

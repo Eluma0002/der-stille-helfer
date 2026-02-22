@@ -58,13 +58,17 @@ const RezepteListe = () => {
     const { activeUserId } = useUser();
     const [search, setSearch]         = useState('');
     const [mealFilter, setMealFilter] = useState('all');
-    const [sourceTab, setSourceTab]   = useState('alle'); // 'alle' | 'eigene'
+    const [sourceTab, setSourceTab]   = useState('alle'); // 'alle' | 'eigene' | 'ki' | 'familie'
 
     const baseRezepte  = useLiveQuery(() => db.base_rezepte.toArray());
     const eigeneRezepte = useLiveQuery(
         () => activeUserId ? db.eigene_rezepte.where('person_id').equals(activeUserId).toArray() : [],
         [activeUserId]
     );
+
+    const kiRezepte     = eigeneRezepte?.filter(r => r.kategorie === 'KI-Rezept')     ?? [];
+    const familieRezepte= eigeneRezepte?.filter(r => r.kategorie === 'Familie')       ?? [];
+    const eigeneOnly    = eigeneRezepte?.filter(r => !['KI-Rezept','Familie'].includes(r.kategorie)) ?? [];
 
     useEffect(() => {
         const init = async () => {
@@ -83,9 +87,11 @@ const RezepteListe = () => {
         init();
     }, []);
 
-    const sourceRecipes = sourceTab === 'eigene'
-        ? (eigeneRezepte || [])
-        : (baseRezepte   || []);
+    const sourceRecipes =
+        sourceTab === 'eigene'  ? eigeneOnly :
+        sourceTab === 'ki'      ? kiRezepte :
+        sourceTab === 'familie' ? familieRezepte :
+        (baseRezepte || []);
 
     const filtered = sourceRecipes.filter(r => {
         if (r.hidden) return false;
@@ -103,21 +109,21 @@ const RezepteListe = () => {
 
             {/* Quelle-Tabs */}
             <div className="source-tabs">
-                <button
-                    className={`source-tab ${sourceTab === 'alle' ? 'active' : ''}`}
-                    onClick={() => setSourceTab('alle')}
-                >
-                    📚 Alle Rezepte
+                <button className={`source-tab ${sourceTab === 'alle' ? 'active' : ''}`} onClick={() => setSourceTab('alle')}>
+                    📚 Alle
                     {baseRezepte && <span className="tab-count">{baseRezepte.length}</span>}
                 </button>
-                <button
-                    className={`source-tab ${sourceTab === 'eigene' ? 'active' : ''}`}
-                    onClick={() => setSourceTab('eigene')}
-                >
-                    ⭐ Meine Rezepte
-                    {eigeneRezepte && eigeneRezepte.length > 0 && (
-                        <span className="tab-count">{eigeneRezepte.length}</span>
-                    )}
+                <button className={`source-tab ${sourceTab === 'eigene' ? 'active' : ''}`} onClick={() => setSourceTab('eigene')}>
+                    ⭐ Eigene
+                    {eigeneOnly.length > 0 && <span className="tab-count">{eigeneOnly.length}</span>}
+                </button>
+                <button className={`source-tab ki-tab ${sourceTab === 'ki' ? 'active' : ''}`} onClick={() => setSourceTab('ki')}>
+                    🧠 KI-Rezepte
+                    {kiRezepte.length > 0 && <span className="tab-count">{kiRezepte.length}</span>}
+                </button>
+                <button className={`source-tab familie-tab ${sourceTab === 'familie' ? 'active' : ''}`} onClick={() => setSourceTab('familie')}>
+                    👨‍👩‍👧 Familie
+                    {familieRezepte.length > 0 && <span className="tab-count">{familieRezepte.length}</span>}
                 </button>
             </div>
 
@@ -146,16 +152,25 @@ const RezepteListe = () => {
                 ))}
             </div>
 
-            {/* Meine Rezepte – Hinweis wenn leer */}
-            {sourceTab === 'eigene' && (!eigeneRezepte || eigeneRezepte.length === 0) && (
+            {/* Leer-Zustände */}
+            {sourceTab === 'eigene' && eigeneOnly.length === 0 && (
                 <div className="empty-state">
                     <p>⭐ Noch keine eigenen Rezepte</p>
-                    <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
-                        Füge Rezepte im Notizen-Bereich hinzu.
-                    </p>
-                    <Link to="/notizen" className="btn primary" style={{ marginTop: 12 }}>
-                        + Rezept hinzufügen
-                    </Link>
+                    <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Füge Rezepte im Notizen-Bereich hinzu.</p>
+                    <Link to="/notizen" className="btn primary" style={{ marginTop: 12 }}>+ Rezept hinzufügen</Link>
+                </div>
+            )}
+            {sourceTab === 'ki' && kiRezepte.length === 0 && (
+                <div className="empty-state">
+                    <p>🧠 Noch keine KI-Rezepte</p>
+                    <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Lass Chef Aivo Rezepte erfinden und speichere sie hier.</p>
+                    <button className="btn primary" style={{ marginTop: 12 }} onClick={() => window.location.hash = '#/koch-assistent'}>→ Koch-Seite öffnen</button>
+                </div>
+            )}
+            {sourceTab === 'familie' && familieRezepte.length === 0 && (
+                <div className="empty-state">
+                    <p>👨‍👩‍👧 Noch keine Familienrezepte</p>
+                    <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Erstelle ein Rezept mit der Kategorie „Familie".</p>
                 </div>
             )}
 

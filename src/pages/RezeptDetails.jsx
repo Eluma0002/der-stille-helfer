@@ -89,21 +89,42 @@ const RezeptDetails = () => {
     // ── WhatsApp Teilen ───────────────────────────────
     const buildShareText = () => {
         if (!rezept) return '';
-        const lines = [`🍽️ *${rezept.name}*`];
+        const lines = [];
+        lines.push(`🍳 *${rezept.name}*`);
+        lines.push('━━━━━━━━━━━━━━━━━━');
+
         const meta = [];
         if (rezept.zeit)      meta.push(`⏱ ${rezept.zeit} Min.`);
-        if (rezept.portionen) meta.push(`👥 ${rezept.portionen} Portionen`);
-        if (meta.length)      lines.push(meta.join(' | '));
-        lines.push('');
-        lines.push('🥘 *Zutaten:*');
-        (rezept.zutaten || []).forEach(z => {
-            lines.push(`• ${z.menge ? z.menge + ' ' : ''}${z.name}`);
-        });
+        if (rezept.portionen) meta.push(`👥 ${rezept.portionen} ${rezept.portionen === 1 ? 'Person' : 'Personen'}`);
+        if (rezept.mahlzeit) {
+            const icons = { fruehstueck:'🌅', mittag:'☀️', abend:'🌙', snack:'🍿', salat:'🥗' };
+            const names = { fruehstueck:'Frühstück', mittag:'Mittagessen', abend:'Abendessen', snack:'Snack', salat:'Salat' };
+            meta.push(`${icons[rezept.mahlzeit] || '🍽️'} ${names[rezept.mahlzeit] || rezept.mahlzeit}`);
+        }
+        if (meta.length) lines.push(meta.join('  ·  '));
+
+        if (rezept.zutaten?.length > 0) {
+            lines.push('');
+            lines.push('🥘 *Zutaten:*');
+            rezept.zutaten.forEach(z => {
+                lines.push(`  • ${z.menge ? z.menge + '\u00A0' : ''}${z.name}`);
+            });
+        }
+
         if (rezept.anleitung) {
             lines.push('');
-            lines.push('📋 *Anleitung:*');
-            lines.push(rezept.anleitung);
+            lines.push('📋 *Zubereitung:*');
+            // Nummerierte Schritte wenn noch nicht vorhanden
+            const steps = rezept.anleitung.split('\n').filter(s => s.trim());
+            steps.forEach((step, i) => {
+                const clean = step.replace(/^\d+[\.\)]\s*/, '');
+                lines.push(`${i + 1}. ${clean}`);
+            });
         }
+
+        lines.push('');
+        lines.push('─────────────────');
+        lines.push('📱 _Rezept aus Cellara App_');
         return lines.join('\n');
     };
 

@@ -1,0 +1,426 @@
+/* ── Unterwegs-Seite ─────────────────────────────────────────────────────── */
+
+.unterwegs-page {
+    padding: 0 0 6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+/* ── Header ── */
+.unterwegs-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1rem 1rem;
+    background: linear-gradient(135deg, #f97316cc 0%, #fb923c44 100%);
+    border-radius: 0 0 1.25rem 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.uw-header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.uw-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a1a1a;
+}
+
+.uw-subtitle {
+    font-size: 0.85rem;
+    color: #555;
+}
+
+.uw-header-icon {
+    font-size: 2rem;
+    opacity: 0.85;
+}
+
+/* ── Zeit-Abschnitt ── */
+.uw-zeit-section {
+    padding: 0 1rem 0.5rem;
+}
+
+.uw-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #888;
+    margin-bottom: 0.5rem;
+}
+
+.uw-zeit-chips {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.uw-zeit-chip {
+    padding: 0.4rem 0.9rem;
+    border-radius: 999px;
+    border: 1.5px solid #e5e7eb;
+    background: #fff;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #555;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.uw-zeit-chip.active {
+    background: #f97316;
+    border-color: #f97316;
+    color: #fff;
+    font-weight: 700;
+}
+
+/* ── KI-Abschnitt ── */
+.uw-ki-section {
+    margin: 0.75rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.uw-ki-btn {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #fff;
+    border: none;
+    border-radius: 0.875rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+}
+
+.uw-ki-btn:active {
+    transform: scale(0.97);
+}
+
+.uw-ki-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.uw-ki-btn.loading {
+    opacity: 0.7;
+    animation: uw-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes uw-pulse {
+    0%, 100% { opacity: 0.7; }
+    50%       { opacity: 1; }
+}
+
+.uw-no-key {
+    font-size: 0.82rem;
+    color: #f97316;
+    text-align: center;
+}
+
+.uw-no-key a {
+    color: #f97316;
+    font-weight: 600;
+}
+
+.uw-ki-error {
+    background: #fef2f2;
+    border: 1px solid #fca5a5;
+    border-radius: 0.625rem;
+    padding: 0.6rem 0.75rem;
+    font-size: 0.85rem;
+    color: #ef4444;
+}
+
+.uw-ki-antwort {
+    background: linear-gradient(135deg, #ede9fe, #f5f3ff);
+    border: 1.5px solid #c4b5fd;
+    border-radius: 0.875rem;
+    padding: 0.875rem 1rem;
+}
+
+.uw-ki-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #7c3aed;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.4rem;
+}
+
+.uw-ki-text {
+    font-size: 0.9rem;
+    color: #1a1a1a;
+    line-height: 1.55;
+    white-space: pre-wrap;
+}
+
+/* ── Orte-Abschnitt ── */
+.uw-orte-section {
+    margin: 0.25rem 1rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.uw-orte-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.uw-add-btn {
+    padding: 0.4rem 0.9rem;
+    background: #f97316;
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s;
+}
+
+.uw-add-btn:active { opacity: 0.8; }
+
+/* ── Formular ── */
+.uw-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    background: #fff;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 1rem;
+    padding: 1rem;
+}
+
+.uw-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+}
+
+.uw-input {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 0.625rem;
+    font-size: 0.88rem;
+    color: #1a1a1a;
+    background: #fafafa;
+    box-sizing: border-box;
+    transition: border-color 0.15s;
+}
+
+.uw-input:focus {
+    outline: none;
+    border-color: #f97316;
+    background: #fff;
+}
+
+.uw-typ-chips {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+}
+
+.uw-typ-chip {
+    padding: 0.3rem 0.65rem;
+    border-radius: 999px;
+    border: 1.5px solid #e5e7eb;
+    background: #f9fafb;
+    font-size: 0.78rem;
+    color: #555;
+    cursor: pointer;
+    transition: all 0.12s;
+}
+
+.uw-typ-chip.active {
+    background: #f97316;
+    border-color: #f97316;
+    color: #fff;
+    font-weight: 600;
+}
+
+.uw-form-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+    margin-top: 0.25rem;
+}
+
+.uw-btn-cancel {
+    padding: 0.55rem 1rem;
+    background: #f3f4f6;
+    border: none;
+    border-radius: 0.625rem;
+    font-size: 0.85rem;
+    color: #555;
+    cursor: pointer;
+}
+
+.uw-btn-save {
+    padding: 0.55rem 1rem;
+    background: #f97316;
+    color: #fff;
+    border: none;
+    border-radius: 0.625rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* ── Ort-Karte ── */
+.ort-card {
+    background: #fff;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 1rem;
+    padding: 0.875rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.ort-card-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+}
+
+.ort-typ-icon {
+    font-size: 1.5rem;
+    line-height: 1;
+    flex-shrink: 0;
+    margin-top: 0.05rem;
+}
+
+.ort-card-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.ort-card-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ort-card-meta {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.15rem;
+}
+
+.ort-card-meta span {
+    font-size: 0.78rem;
+    color: #888;
+}
+
+.ort-typ-label {
+    background: #f3f4f6;
+    border-radius: 999px;
+    padding: 0.1rem 0.5rem;
+    font-size: 0.72rem !important;
+    color: #666 !important;
+}
+
+.ort-delete-btn {
+    padding: 0.25rem 0.4rem;
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border-radius: 0.375rem;
+    transition: color 0.15s, background 0.15s;
+    flex-shrink: 0;
+}
+
+.ort-delete-btn:hover {
+    background: #fef2f2;
+    color: #ef4444;
+}
+
+.ort-meistens {
+    font-size: 0.82rem;
+    color: #555;
+    padding: 0.3rem 0.5rem;
+    background: #f9fafb;
+    border-radius: 0.5rem;
+}
+
+.ort-meistens-label {
+    font-weight: 600;
+    color: #888;
+}
+
+.ort-notizen {
+    font-size: 0.8rem;
+    color: #777;
+    font-style: italic;
+}
+
+.ort-maps-btn {
+    display: inline-block;
+    margin-top: 0.25rem;
+    padding: 0.35rem 0.75rem;
+    background: #eff6ff;
+    color: #2563eb;
+    border-radius: 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.15s;
+    align-self: flex-start;
+}
+
+.ort-maps-btn:hover {
+    background: #dbeafe;
+}
+
+/* ── Leer-Zustand ── */
+.uw-empty {
+    text-align: center;
+    padding: 2rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.uw-empty-icon {
+    font-size: 2.5rem;
+    opacity: 0.6;
+}
+
+.uw-empty-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #555;
+}
+
+.uw-empty-hint {
+    font-size: 0.82rem;
+    color: #999;
+    max-width: 280px;
+}
+
+/* ── Ort-Liste ── */
+.uw-orte-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
