@@ -25,7 +25,7 @@ export default function Layout({ children }) {
     return (
         <div className="fridge-app">
             <header>
-                <h1>Cukina</h1>
+                <h1>Cellara</h1>
                 <nav>
                     {NAV_ITEMS.map(item => (
                         <Link

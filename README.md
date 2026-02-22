@@ -1,14 +1,14 @@
-# Cukina
+# Cellara
 
-**Pantry & Fridge → Recipes. AI Chef + Your Rules + Voice.**
+**Talk to your kitchen. AI Chef + Your Rules.**
 
-> DE: Vorrat & Kühlschrank → Rezepte. KI + deine Regeln + Sprache.
+> DE: Sprich mit deiner Küche. KI-Koch + deine Regeln.
 
 ---
 
 ## About
 
-Cukina turns your pantry and fridge into meals. Track what you have, see what expires soon, and cook smarter with two chefs: an **AI Chef** for inspiration and your **Private Chef** (rule-based) that follows your custom cooking algorithm.
+Cellara turns your pantry and fridge into meals. Track what you have, see what expires soon, and cook smarter with two chefs: an **AI Chef** for inspiration and your **Private Chef** (rule-based) that follows your custom cooking algorithm.
 
 ---
 
@@ -25,13 +25,13 @@ Cukina turns your pantry and fridge into meals. Track what you have, see what ex
 - **Shopping list/cart** — generate shopping lists from recipes and plans
 - **Food sharing** — give away items and share meals with others
 
-> Cukina is built for speed: **speak it, store it, cook it.**
+> Cellara is built for speed: **speak it, store it, cook it.**
 
 ---
 
 ## DE — Beschreibung
 
-Cukina macht aus deinem Vorrat und Kühlschrank echte Mahlzeiten. Du siehst was bald abläuft und bekommst Vorschläge von zwei Köchen: **KI-Koch** (Inspiration) und **Privatkoch** (deine Regeln/Algorithmus, editierbar + Reset).
+Cellara macht aus deinem Vorrat und Kühlschrank echte Mahlzeiten. Du siehst was bald abläuft und bekommst Vorschläge von zwei Köchen: **KI-Koch** (Inspiration) und **Privatkoch** (deine Regeln/Algorithmus, editierbar + Reset).
 
 Neu: **Rezepte per Spracheingabe** – Zutaten und Schritte einfach sprechen und speichern.
 
